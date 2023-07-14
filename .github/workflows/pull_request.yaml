@@ -19,6 +19,10 @@ jobs:
       - name: Set up GCC
         uses: egor-tensin/setup-gcc@v1
 
+      - name: Change permissions
+        run: |
+          chmod +x unit_tests/test
+
       - name: Build and test
         run: |
           make -C unit_tests
