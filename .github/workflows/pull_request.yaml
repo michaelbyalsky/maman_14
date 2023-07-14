@@ -16,9 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
-
       - name: Change permissions for all files in repository
         run: |
           chmod -R 777 .
@@ -26,7 +23,9 @@ jobs:
       - name: print all files in unit_tests directory
         run: |
             ls -la unit_tests
-        
+
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
 
       - name: Build and test
         run: |
