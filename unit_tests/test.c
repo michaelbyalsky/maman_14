@@ -13,7 +13,7 @@ int compareFiles(const char* file1, const char* file2) {
 
     if (fp1 == NULL || fp2 == NULL) {
         printf("Error opening files\n");
-        return;
+        return 0;
     }
 
     while (fgets(line1, sizeof(line1), fp1) && fgets(line2, sizeof(line2), fp2)) {
