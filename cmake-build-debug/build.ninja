@@ -55,18 +55,6 @@ build CMakeFiles/maman_14.dir/main.c.obj: C_COMPILER__maman_14_Debug C$:/Users/m
   OBJECT_DIR = CMakeFiles\maman_14.dir
   OBJECT_FILE_DIR = CMakeFiles\maman_14.dir
 
-build CMakeFiles/maman_14.dir/pre_assembler.c.obj: C_COMPILER__maman_14_Debug C$:/Users/michael/CLionProjects/maman_14/pre_assembler.c || cmake_object_order_depends_target_maman_14
-  DEP_FILE = CMakeFiles\maman_14.dir\pre_assembler.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -std=gnu11
-  OBJECT_DIR = CMakeFiles\maman_14.dir
-  OBJECT_FILE_DIR = CMakeFiles\maman_14.dir
-
-build CMakeFiles/maman_14.dir/unit_tests/test.c.obj: C_COMPILER__maman_14_Debug C$:/Users/michael/CLionProjects/maman_14/unit_tests/test.c || cmake_object_order_depends_target_maman_14
-  DEP_FILE = CMakeFiles\maman_14.dir\unit_tests\test.c.obj.d
-  FLAGS = -g -fdiagnostics-color=always -std=gnu11
-  OBJECT_DIR = CMakeFiles\maman_14.dir
-  OBJECT_FILE_DIR = CMakeFiles\maman_14.dir\unit_tests
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target maman_14
@@ -75,7 +63,7 @@ build CMakeFiles/maman_14.dir/unit_tests/test.c.obj: C_COMPILER__maman_14_Debug 
 #############################################
 # Link the executable maman_14.exe
 
-build maman_14.exe: C_EXECUTABLE_LINKER__maman_14_Debug CMakeFiles/maman_14.dir/main.c.obj CMakeFiles/maman_14.dir/pre_assembler.c.obj CMakeFiles/maman_14.dir/unit_tests/test.c.obj
+build maman_14.exe: C_EXECUTABLE_LINKER__maman_14_Debug CMakeFiles/maman_14.dir/main.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\maman_14.dir
