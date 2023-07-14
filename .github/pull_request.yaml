@@ -1,0 +1,32 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - main
+    pull_request:
+      branches:
+        - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up C environment
+        uses: actions/setup-cmake@v1
+
+      - name: Build and test
+        run: |
+          make -C unit_tests
+          ./unit_tests/test
+          test_result=$?
+          if [ $test_result -eq 0 ]; then
+            echo "Tests failed!"
+            exit 1
+          else
+            echo "Tests passed!"
+          fi
