@@ -24,10 +24,6 @@ jobs:
         run: |
             ls -la unit_tests
 
-      - name: Install GCC
-        run: |
-          sudo apt-get install gcc
-
       - name: Build and test
         run: |
           make -C unit_tests
