@@ -23,6 +23,10 @@ jobs:
         run: |
           chmod -R 777 .
 
+      - name: print all files in repository
+        run: |
+          ls -la
+
       - name: Build and test
         run: |
           make -C unit_tests
