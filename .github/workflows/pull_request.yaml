@@ -20,9 +20,9 @@ jobs:
         run: |
           chmod -R 777 .
 
-      - name: print all files in unit_tests directory
+      - name: Go into unit_tests directory
         run: |
-            ls -la unit_tests
+          cd unit_tests
 
       - name: Build and test
         run: |

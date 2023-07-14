@@ -51,8 +51,8 @@ int compareFiles(const char* file1, const char* file2) {
 int main(int argc, char* argv[]) {
     int result;
     int test_result;
-    pre_assemble("./initial.as", "output_after_pre.as");
-    result = compareFiles("output_after_pre.as", "./expected_after_pre.as");
+    pre_assemble("./initial.as", "./output_after_pre.as");
+    result = compareFiles("./output_after_pre.as", "./expected_after_pre.as");
     if (result) {
         printf("Test passed!\n");
         test_result = 1;
