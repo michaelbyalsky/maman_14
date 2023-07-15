@@ -20,10 +20,6 @@ jobs:
         run: |
           chmod -R 777 .
 
-      - name: Go into unit_tests directory
-        run: |
-          cd unit_tests
-
       - name: Build and test
         run: |
           make -C unit_tests

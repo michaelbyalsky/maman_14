@@ -4,7 +4,7 @@ prn -5
 bne LOOP
 sub @r1, @r4
     bne END
-L1: inc
+L1: inc K
 bne LOOP
 sub @r4, @r7
     bne END
