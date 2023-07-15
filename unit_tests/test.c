@@ -56,10 +56,8 @@ int main(int argc, char* argv[]) {
     pre_assemble("unit_tests/initial.as", "unit_tests/output_after_pre.as");
     result = compareFiles("unit_tests/output_after_pre.as", "unit_tests/expected_after_pre.as");
     if (result) {
-        printf("Test passed!\n");
         test_result = 1;
     } else {
-        printf("Test failed!\n");
         test_result = 0;
     }
 
