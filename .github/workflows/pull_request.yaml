@@ -37,8 +37,8 @@ jobs:
       - name: Check for warnings
         run: |
           if grep -iq "warning:" build_output.txt; then
-            echo "Warnings found in build output"
             cat build_output.txt
+            echo "Warnings found in build output"
             exit 1
           else
             echo "No warnings found in build output"
