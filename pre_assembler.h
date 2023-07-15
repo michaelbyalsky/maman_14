@@ -10,8 +10,9 @@ typedef struct {
     char value[MAX_LINE_LENGTH];
 } Macro;
 
-int loadMacros(const char* filename, Macro* macros);
+int loadMacros(const char* filename, Macro *macros);
 void replaceMacros(const char* filename, Macro* macros, int macroCount, const char* outputFilename);
-void pre_assemble(const char* filename, const char* outputFilename);
+char* pre_assemble(const char* filename);
+char* createOutputFilename(const char* filename);
 
 #endif /* PRE_ASSEMBLER_H */
