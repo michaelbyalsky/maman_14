@@ -49,11 +49,11 @@ int compareFiles(const char* file1, const char* file2) {
 }
 
 int main(int argc, char* argv[]) {
-    int result;
+    int result_failed;
     int test_result;
     pre_assemble("unit_tests/initial.as", "unit_tests/output_after_pre.as");
-    result = compareFiles("unit_tests/output_after_pre.as", "unit_tests/expected_after_pre.as");
-    if (!result) {
+    result_failed = compareFiles("unit_tests/output_after_pre.as", "unit_tests/expected_after_pre.as");
+    if (!result_failed) {
         test_result = 0;
         printf("Test passed\n");
     } else {
