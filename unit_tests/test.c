@@ -55,8 +55,10 @@ int main(int argc, char* argv[]) {
     result = compareFiles("unit_tests/output_after_pre.as", "unit_tests/expected_after_pre.as");
     if (result) {
         test_result = 0;
+        printf("Test passed\n");
     } else {
         test_result = 1;
+        printf("Test failed\n");
     }
 
     return test_result;

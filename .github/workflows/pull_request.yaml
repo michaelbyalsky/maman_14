@@ -31,9 +31,4 @@ jobs:
           ./unit_tests/test
           test_result=$?
           echo "Test result: $test_result"
-          if [ $test_result -eq 0 ]; then
-            echo "Tests failed!"
-            exit 1
-          else
-            echo "Tests passed!"
-          fi
+          exit $test_result
