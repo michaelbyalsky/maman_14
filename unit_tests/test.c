@@ -37,10 +37,8 @@ int compareFiles(const char* file1, const char* file2) {
     }
 
     if (!different && feof(fp1) && feof(fp1)) {
-        printf("Files match!\n");
         isSame = 1;
     } else {
-        printf("Files differ!\n");
         isSame = 0;
     }
 
@@ -60,6 +58,8 @@ int main(int argc, char* argv[]) {
     } else {
         test_result = 0;
     }
+
+    printf("%d", test_result);
 
     return test_result;
 }
