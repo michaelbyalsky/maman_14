@@ -22,8 +22,8 @@ jobs:
 
       - name: Remove old build
         run: |
-          rm test
-          rm test.o
+          rm ./unit_tests/test
+          rm ./unit_tests/test.o
 
       - name: Build and test
         run: |
