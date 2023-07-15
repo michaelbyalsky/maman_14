@@ -20,6 +20,11 @@ jobs:
         run: |
           chmod -R 777 .
 
+      - name: Remove old build
+        run: |
+          rm test
+          rm test.o
+
       - name: Build and test
         run: |
           make -C unit_tests
