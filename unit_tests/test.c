@@ -37,9 +37,9 @@ int compareFiles(const char* file1, const char* file2) {
     }
 
     if (!different && feof(fp1) && feof(fp1)) {
-        isSame = 1;
-    } else {
         isSame = 0;
+    } else {
+        isSame = 1;
     }
 
     fclose(fp1);
@@ -54,12 +54,10 @@ int main(int argc, char* argv[]) {
     pre_assemble("unit_tests/initial.as", "unit_tests/output_after_pre.as");
     result = compareFiles("unit_tests/output_after_pre.as", "unit_tests/expected_after_pre.as");
     if (result) {
-        test_result = 1;
-    } else {
         test_result = 0;
+    } else {
+        test_result = 1;
     }
-
-    printf("%d", test_result);
 
     return test_result;
 }
