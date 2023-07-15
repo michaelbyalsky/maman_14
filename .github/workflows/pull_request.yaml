@@ -20,10 +20,28 @@ jobs:
         run: |
           chmod -R 777 .
 
-      - name: Remove old build
+      - name: Remove old test build
         run: |
           rm ./unit_tests/test
           rm ./unit_tests/test.o
+
+      - name: Remove old build
+        run: |
+          rm ./main.o
+          rm ./assembler
+          rm ./pre_assembler.o
+
+      - name: Build project
+        run: make 2>&1 | tee build_output.txt
+
+      - name: Check for warnings
+        run: |
+          if grep -iq "warning:" build_output.txt; then
+          echo "Warnings found in build output"
+          exit 1
+          else
+          echo "No warnings found in build output"
+          fi
 
       - name: Build and test
         run: |
