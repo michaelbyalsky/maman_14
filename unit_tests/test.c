@@ -62,6 +62,7 @@ int main(int argc, char* argv[]) {
         printf("Test failed!\n");
         test_result = 0;
     }
+
     return test_result;
 }
 
