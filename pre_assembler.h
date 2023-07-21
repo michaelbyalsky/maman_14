@@ -1,9 +1,10 @@
 #ifndef PRE_ASSEMBLER_H
 #define PRE_ASSEMBLER_H
 
-#define MAX_LINE_LENGTH 1000
+#include "globals.h"
+
 #define MAX_MACRO_COUNT 100
-#define MAX_MACRO_NAME_LENGTH 10
+#define MAX_MACRO_NAME_LENGTH 100
 
 typedef struct {
     char name[MAX_MACRO_NAME_LENGTH];

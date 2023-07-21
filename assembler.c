@@ -1,0 +1,31 @@
+#include "pre_assembler.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "first_run.h"
+
+
+static int process_file(char *filename);
+
+int main(int argc, char *argv[]) {
+    int i;
+    for (i = 1; i < argc; ++i) {
+        process_file(argv[i]);
+    }
+    return 0;
+}
+
+static int process_file(char *filename) {
+    long ic = IC_START;
+    long dc = DC_START;
+
+    /* pre-assemble the file */
+    char *outputFileName = pre_assemble(filename);
+    if (outputFileName == NULL) {
+        return -1;
+    }
+
+    /* first run */
+    first_run(outputFileName, &ic, &dc);
+}

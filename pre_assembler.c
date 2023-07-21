@@ -110,6 +110,10 @@ void replaceMacros(const char *filename, Macro *macros, int macroCount, const ch
 
     }
 
+    if (line[strlen(line) - 1] != '\n') {
+        fputc('\n', outputFile);
+    }
+
     fclose(inputFile);
     fclose(outputFile);
 }
