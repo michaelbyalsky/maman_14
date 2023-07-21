@@ -12,7 +12,9 @@ int is_valid_label(const char *label);
 
 int find_label(char *line, char *label, int *line_index);
 
-int find_directive(char *line, char *directive, int *line_index);
+int handle_directive(char *line, int *line_index);
+
+int is_directive(char *line, int *line_index);
 
 int first_run(char *filename, int *ic, int *dc) {
     /* read the file */
@@ -44,6 +46,10 @@ int process_line(char *line, int *ic, int *dc) {
 
 
     SKIP_WHITE_SPACES(line, i);
+    if(is_directive(line, &i)){
+        i++;
+        handle_directive(line, &i);
+    }
 }
 
 int find_label(char *line, char *label, int *line_index) {
@@ -95,8 +101,28 @@ int is_valid_label(const char *label) {
     return 1; /* true */
 }
 
-int find_directive(char *line, char *directive, int *line_index) {
-    if (!line[*line_index] == '.') {
-        return 0;
+int is_directive(char *line, int *line_index) {
+    if (line[*line_index] == '.') {
+        return 1;
+    }
+    return 0;
+}
+
+int handle_directive(char *line, int *line_index) {
+    /* extract directive name */
+    int directive = find_directive_by_name(&line[*line_index]);
+    if (directive == DIRECTIVE_NOT_FOUND) {
+        printf("Error: directive not found\n");
+        return -1;
+    }
+
+    if (directive == DATA) {
+        /* handle data directive */
+    } else if (directive == STRING) {
+        /* handle string directive */
+    } else if (directive == ENTRY) {
+        /* handle entry directive */
+    } else if (directive == EXTERN) {
+        /* handle extern directive */
     }
 }

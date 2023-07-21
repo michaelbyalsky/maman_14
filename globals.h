@@ -88,10 +88,11 @@ typedef struct {
 
 
 enum e_directive {
-    DATA,
-    STRING,
-    ENTRY,
-    EXTERN
+    DATA = 0,
+    STRING = 1,
+    ENTRY= 2,
+    EXTERN = 3,
+    DIRECTIVE_NOT_FOUND = -1
 };
 
 typedef struct {
