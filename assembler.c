@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
 static int process_file(char *filename) {
     long ic = IC_START;
     long dc = DC_START;
+    unsigned long data_img[CODE_IMG_LENGTH];
 
     /* pre-assemble the file */
     char *outputFileName = pre_assemble(filename);
@@ -27,5 +28,13 @@ static int process_file(char *filename) {
     }
 
     /* first run */
-    first_run(outputFileName, &ic, &dc);
+    first_run(outputFileName, &ic, &dc, data_img);
+    /* print dc */
+    printf("DC: %lu\n", dc);
+    /* print the data image */
+    printf("Data image:\n");
+    int i;
+    for ( i = 0; i < dc; ++i) {
+        printf("%lu\n", data_img[i]);
+    }
 }
