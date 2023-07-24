@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 #include "helpers.h"
 #include "globals.h"
 
@@ -11,6 +12,19 @@ int is_empty_line(char *s) {
         s++;
     }
     return 1;
+}
+
+void remove_white_spaces(char *str, int start_index) {
+    int i = start_index;
+    int j = 0;
+    while (str[i] != '\0') {
+        if (str[i] != ' ' && str[i] != '\t') {
+            str[j] = str[i];
+            ++j;
+        }
+        ++i;
+    }
+    str[j] = '\0';
 }
 
 void move_string_pointer_until_no_white_space(char **string) {
@@ -53,3 +67,21 @@ Register registers[] = {
         {"r6", R6},
         {"r7", R7}
 };
+
+/**
+ * @brief checks if the string is a valid number
+ * @param line
+ * @return int
+ */
+int is_valid_number(const char *str) {
+    if (*str == '-' || *str == '+') {
+        ++str;
+    }
+    while (*str) {
+        if (!isdigit(*str)) {
+            return 0;
+        }
+        ++str;
+    }
+    return 1;
+}

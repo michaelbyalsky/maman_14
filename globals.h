@@ -66,9 +66,19 @@ typedef struct {
     int address;
 } Label;
 
+enum e_directive {
+    DATA = 0,
+    STRING = 1,
+    ENTRY= 2,
+    EXTERN = 3,
+    DIRECTIVE_NOT_FOUND = -1
+};
 typedef struct {
-    unsigned int ARE : 2;
-    unsigned long data : 10;
+    union {
+        int number;
+        char *string;
+    };
+    enum e_directive datatype;
 } DataWord;
 
 typedef struct {
@@ -87,13 +97,6 @@ typedef struct {
 
 
 
-enum e_directive {
-    DATA = 0,
-    STRING = 1,
-    ENTRY= 2,
-    EXTERN = 3,
-    DIRECTIVE_NOT_FOUND = -1
-};
 
 typedef struct {
     char *name;

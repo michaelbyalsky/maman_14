@@ -6,19 +6,21 @@
 #include "helpers.h"
 #include "first_run.h"
 
-int process_line(char *line, long *ic, long *dc, unsigned long *data_img);
+int process_line(char *line, long *ic, long *dc, DataWord *data_img);
 
 int is_valid_label(const char *label);
 
 int find_label(char *line, char *label, int *line_index);
 
-int handle_directive(char *line, int *line_index, long *ic, long *dc, unsigned long *data_img);
+int handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data_img);
 
 int is_directive(char *line, int *line_index);
 
-int handle_string_directive(const char *line, int *line_index, long *ic, long *dc, unsigned long *data_img);
+int handle_string_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img);
 
-int first_run(char *filename, long *ic, long *dc, unsigned long *data_img) {
+int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img);
+
+int first_run(char *filename, long *ic, long *dc, DataWord *data_img) {
     /* read the file */
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -34,7 +36,7 @@ int first_run(char *filename, long *ic, long *dc, unsigned long *data_img) {
 
 }
 
-int process_line(char *line, long *ic, long *dc, unsigned long *data_img) {
+int process_line(char *line, long *ic, long *dc, DataWord *data_img) {
     /*line index*/
     int i = 0;
     /* check if line is empty */
@@ -110,7 +112,7 @@ int is_directive(char *line, int *line_index) {
     return 0;
 }
 
-int handle_directive(char *line, int *line_index, long *ic, long *dc, unsigned long *data_img) {
+int handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data_img) {
     /* extract directive name */
     int directive = find_directive_by_name(&line[*line_index]);
     if (directive == DIRECTIVE_NOT_FOUND) {
@@ -119,7 +121,8 @@ int handle_directive(char *line, int *line_index, long *ic, long *dc, unsigned l
     }
 
     if (directive == DATA) {
-        /* handle data directive */
+
+        handle_data_directive(line, line_index, ic, dc, data_img);
     } else if (directive == STRING) {
         handle_string_directive(line, line_index, ic, dc, data_img);
     } else if (directive == ENTRY) {
@@ -129,7 +132,7 @@ int handle_directive(char *line, int *line_index, long *ic, long *dc, unsigned l
     }
 }
 
-int handle_string_directive(const char *line, int *line_index, long *ic, long *dc, unsigned long *data_img) {
+int handle_string_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img) {
     /* move the line_index 6 characters forward to skip the "string" */
     *line_index += 6;
     SKIP_WHITE_SPACES(line, *line_index);
@@ -147,7 +150,8 @@ int handle_string_directive(const char *line, int *line_index, long *ic, long *d
 
     int temp_index = *line_index;
     /* check there is closing double quote */
-    while (line[temp_index] != '"' && (line[temp_index] != -30 && line[temp_index + 1] != -128 && line[temp_index + 2] != -99)) {
+    while (line[temp_index] != '"' &&
+           (line[temp_index] != -30 && line[temp_index + 1] != -128 && line[temp_index + 2] != -99)) {
         if (line[temp_index] == '\0') {
             printf("Error: string directive must be followed by a string\n");
             return -1;
@@ -156,10 +160,47 @@ int handle_string_directive(const char *line, int *line_index, long *ic, long *d
     }
 
     /* go until the next double quote and add each character to the data image */
-    while (line[*line_index] != '"' && (line[*line_index] != -30 && line[*line_index + 1] != -128 && line[*line_index + 2] != -99)) {
-        data_img[*dc] = line[*line_index];
+    while (line[*line_index] != '"' &&
+           (line[*line_index] != -30 && line[*line_index + 1] != -128 && line[*line_index + 2] != -99)) {
+        data_img[*dc].datatype = STRING;
+        data_img[*dc].string = (char *) line[*line_index];
         (*dc)++;
         (*line_index)++;
     }
     (*line_index)++;
+}
+
+int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img) {
+    /* move the line_index 4 characters forward to skip the "data" */
+    *line_index += 5;
+    char line_copy[MAX_LINE_LENGTH];
+    strcpy(line_copy, &line[*line_index]);
+    remove_white_spaces(line_copy, 0);
+    int temp_index = 0;
+    /* while is a character */
+    while (line_copy[temp_index] != '\000' && line_copy[temp_index] != "\0" && line_copy[temp_index] != "\n") {
+        printf("line_copy: %c\n", line_copy);
+        char temp_num[MAX_LINE_LENGTH] = {'\0'};
+        if (line_copy[temp_index] == ',') {
+            temp_index++;
+            continue;
+        }
+        /* if - */
+        if(line_copy[temp_index] == '-'){
+            temp_num[0] = '-';
+            temp_index++;
+        }
+        /* if number */
+        if (isdigit(line_copy[temp_index])) {
+            while (isdigit(line_copy[temp_index])) {
+                temp_num[strlen(temp_num)] = line_copy[temp_index];
+                temp_index++;
+            }
+            data_img[*dc].datatype = DATA;
+            data_img[*dc].number = atoi(temp_num);
+            (*dc)++;
+            continue;
+        }
+        temp_index++;
+    }
 }

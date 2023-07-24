@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 static int process_file(char *filename) {
     long ic = IC_START;
     long dc = DC_START;
-    unsigned long data_img[CODE_IMG_LENGTH];
+    DataWord data_img[CODE_IMG_LENGTH];
 
     /* pre-assemble the file */
     char *outputFileName = pre_assemble(filename);
@@ -35,6 +35,10 @@ static int process_file(char *filename) {
     printf("Data image:\n");
     int i;
     for ( i = 0; i < dc; ++i) {
-        printf("%lu\n", data_img[i]);
+        if (data_img[i].datatype == STRING) {
+            printf("%lu: %c\n", i + ic, data_img[i].string);
+        } else {
+            printf("%lu: %d\n", i + ic, data_img[i].number);
+        }
     }
 }
