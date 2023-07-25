@@ -1,8 +1,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "helpers.h"
-#include "globals.h"
 
 int is_empty_line(char *s) {
     while (*s != '\0') {
@@ -84,4 +84,50 @@ int is_valid_number(const char *str) {
         ++str;
     }
     return 1;
+}
+
+/* Function to create a new node for the linked list */
+Label *createLabelNode(const char *name, long address) {
+    Label *newNode = (Label *)malloc(sizeof(Label));
+    if (newNode == NULL) {
+        perror("Memory allocation failed.");
+        exit(EXIT_FAILURE);
+    }
+    newNode->name = strdup(name);
+    newNode->address = address;
+    newNode->next = NULL;
+    return newNode;
+}
+
+/* Function to insert a new node at the end of the linked list */
+void insertLabelNode(Label **head, const char *name, long address) {
+    Label *newNode = createLabelNode(name, address);
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        Label *current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+}
+
+/* Function to print the linked list */
+void printLabelList(Label **head) {
+    Label *current = head;
+    while (current != NULL) {
+        printf("Name: %s, Address: %ld\n", current->name, current->address);
+        current = current->next;
+    }
+}
+
+void freeLinkedList(Label **head) {
+    Label *current = head;
+    while (current != NULL) {
+        Label *temp = current;
+        current = current->next;
+        free(temp->name);
+        free(temp);
+    }
 }

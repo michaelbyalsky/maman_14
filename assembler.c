@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "first_run.h"
+#include "helpers.h"
 
 
 static int process_file(char *filename);
@@ -20,6 +21,8 @@ static int process_file(char *filename) {
     long ic = IC_START;
     long dc = DC_START;
     DataWord data_img[CODE_IMG_LENGTH];
+    /* initialize the head of the label list */
+    Label *head = NULL;
 
     /* pre-assemble the file */
     char *outputFileName = pre_assemble(filename);
@@ -28,7 +31,7 @@ static int process_file(char *filename) {
     }
 
     /* first run */
-    first_run(outputFileName, &ic, &dc, data_img);
+    first_run(outputFileName, &ic, &dc, data_img, &head);
     /* print dc */
     printf("DC: %lu\n", dc);
     /* print the data image */
@@ -36,9 +39,12 @@ static int process_file(char *filename) {
     int i;
     for ( i = 0; i < dc; ++i) {
         if (data_img[i].datatype == STRING) {
-            printf("%lu: %c\n", i + ic, data_img[i].string);
+            printf("%lu: %c\n", dc, data_img[i].string);
         } else {
-            printf("%lu: %d\n", i + ic, data_img[i].number);
+            printf("%lu: %d\n", dc, data_img[i].number);
         }
     }
+    /* print the label list */
+    printf("Label list:\n");
+    printLabelList(head);
 }

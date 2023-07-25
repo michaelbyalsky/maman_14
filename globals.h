@@ -4,8 +4,9 @@
 
 #define COMMANDS_TABLE_SIZE = 1000
 #define MAX_LABEL_SIZE 31
+#define MAX_LABEL_COUNT 31
 #define MAX_LINE_LENGTH 80
-#define IC_START 100
+#define IC_START 0
 #define DC_START 0
 #define CODE_IMG_LENGTH 1000
 
@@ -61,9 +62,10 @@ typedef struct {
     unsigned int source : 3;
 } CodeWord;
 
-typedef struct {
+typedef struct Label {
     char *name;
-    int address;
+    long address;
+    struct Label *next;
 } Label;
 
 enum e_directive {
