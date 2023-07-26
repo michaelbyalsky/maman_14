@@ -21,8 +21,9 @@ static int process_file(char *filename) {
     long ic = IC_START;
     long dc = DC_START;
     DataWord data_img[CODE_IMG_LENGTH];
-    /* initialize the head of the label list */
-    Label *head = NULL;
+    /* initialize the labelHead of the label list */
+    Label *labelHead = NULL;
+    CodeWord *codeHead = NULL;
 
     /* pre-assemble the file */
     char *outputFileName = pre_assemble(filename);
@@ -31,20 +32,20 @@ static int process_file(char *filename) {
     }
 
     /* first run */
-    first_run(outputFileName, &ic, &dc, data_img, &head);
-    /* print dc */
-    printf("DC: %lu\n", dc);
+    first_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
+
     /* print the data image */
-    printf("Data image:\n");
     int i;
-    for ( i = 0; i < dc; ++i) {
-        if (data_img[i].datatype == STRING) {
-            printf("%lu: %c\n", dc, data_img[i].string);
-        } else {
-            printf("%lu: %d\n", dc, data_img[i].number);
+    for (i = 0; i < dc; ++i) {
+        if (data_img[i].datatype == DATA) {
+            printf("%d: %d\n", i, data_img[i].number);
+        } else if (data_img[i].datatype == STRING) {
+            printf("%d: %s\n", i, data_img[i].string);
         }
     }
+
     /* print the label list */
-    printf("Label list:\n");
-    printLabelList(head);
+    printLabelList(&labelHead);
+
+    freeLabelList(&labelHead);
 }

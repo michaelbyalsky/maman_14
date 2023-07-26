@@ -8,7 +8,7 @@
 #define MAX_LINE_LENGTH 80
 #define IC_START 0
 #define DC_START 0
-#define CODE_IMG_LENGTH 1000
+#define CODE_IMG_LENGTH 100
 
 
 enum e_instructions {
@@ -27,7 +27,8 @@ enum e_instructions {
     PRN = 12,
     JSR = 13,
     RTS = 14,
-    STOP = 15
+    STOP = 15,
+    INSTRUCTION_NOT_FOUND = -1
 };
 
 
@@ -55,18 +56,13 @@ enum e_registers {
     R7 = 7
 };
 
-typedef struct {
+typedef struct CodeWord {
     unsigned int ARE : 2;
     unsigned int dest : 3;
     unsigned int opcode : 4;
     unsigned int source : 3;
+    struct CodeWord *next;
 } CodeWord;
-
-typedef struct Label {
-    char *name;
-    long address;
-    struct Label *next;
-} Label;
 
 enum e_directive {
     DATA = 0,
@@ -75,10 +71,25 @@ enum e_directive {
     EXTERN = 3,
     DIRECTIVE_NOT_FOUND = -1
 };
+
+enum e_label_type {
+    DATA_LABEL = 0,
+    CODE_LABEL = 1,
+    ENTRY_LABEL = 2,
+    UNDEFINED_LABEL = -1,
+};
+
+typedef struct Label {
+    char *name;
+    long address;
+    struct Label *next;
+    enum e_label_type type;
+} Label;
+
 typedef struct {
     union {
         int number;
-        char *string;
+        char string[2];
     };
     enum e_directive datatype;
 } DataWord;
