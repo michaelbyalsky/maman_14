@@ -59,33 +59,35 @@ enum e_registers {
 
 enum e_code_word_type {
     INSTRUCTION_WORD = 0,
-    DATA_WORD = 1,
-    REGISTER_WORD = 2,
+    DATA_NUMBER_WORD = 1,
+    DATA_LABEL_WORD = 2,
+    REGISTER_WORD = 3,
     CODE_WORD_NOT_FOUND = -1
 };
 
 typedef struct CodeWord {
     union {
         struct {
-            enum e_are are : 2;
-            enum e_address source : 3;
-            unsigned int opcode : 4;
-            enum e_address dest : 3;
+            enum e_are are: 2;
+            enum e_address source: 3;
+            unsigned int opcode: 4;
+            enum e_address dest: 3;
         } instruction;
 
-        union {
-            struct {
+
+        struct {
+            union {
                 signed int value: 10;
-                enum e_are are: 2;
-            } data;
+                char *label;
+            };
+            enum e_are are: 2;
+        } data;
 
-            struct {
-                enum e_registers source: 5;
-                enum e_registers dest: 5;
-                enum e_are are: 2;
-            } registerWord;
-        };
-
+        struct {
+            enum e_registers source: 5;
+            enum e_registers dest: 5;
+            enum e_are are: 2;
+        } registerWord;
     };
 
     enum e_code_word_type codeWordType;

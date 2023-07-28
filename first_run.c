@@ -135,10 +135,10 @@ int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **
             insertRegisterCodeWord(codeHead, 0, source_operand.register_operand.registerNumber);
         } else if (source_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, 0, instruction.opcode, source_address_method);
-            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
+            insertDataLabelCodeWord(codeHead, source_operand.label, ONE_ZERO);
         } else if (source_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, 0, instruction.opcode, source_address_method);
-            insertDataCodeWord(codeHead, source_operand.number, ZERO);
+            insertDataNumberCodeWord(codeHead, source_operand.number, ZERO);
         }
     } else {
         if (source_address_method == REGISTER_DIRECT && dest_address_method == REGISTER_DIRECT) {
@@ -148,35 +148,35 @@ int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **
         } else if (source_address_method == REGISTER_DIRECT && dest_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
             insertRegisterCodeWord(codeHead, source_operand.register_operand.registerNumber, 0);
-            insertDataCodeWord(codeHead, dest_operand.number, ONE_ZERO);
+            insertDataLabelCodeWord(codeHead, dest_operand.label, ONE_ZERO);
         } else if (source_address_method == REGISTER_DIRECT && dest_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
             insertRegisterCodeWord(codeHead, source_operand.register_operand.registerNumber, 0);
-            insertDataCodeWord(codeHead, dest_operand.number, ZERO);
+            insertDataNumberCodeWord(codeHead, dest_operand.number, ZERO);
         } else if (source_address_method == DIRECT && dest_address_method == REGISTER_DIRECT) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
             insertRegisterCodeWord(codeHead, 0, dest_operand.register_operand.registerNumber);
-            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
+            insertDataLabelCodeWord(codeHead, source_operand.label, ONE_ZERO);
         } else if (source_address_method == DIRECT && dest_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
-            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
-            insertDataCodeWord(codeHead, dest_operand.number, ONE_ZERO);
+            insertDataLabelCodeWord(codeHead, source_operand.label, ONE_ZERO);
+            insertDataLabelCodeWord(codeHead, dest_operand.label, ONE_ZERO);
         } else if (source_address_method == DIRECT && dest_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
-            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
-            insertDataCodeWord(codeHead, dest_operand.number, ZERO);
+            insertDataLabelCodeWord(codeHead, source_operand.label, ONE_ZERO);
+            insertDataNumberCodeWord(codeHead, dest_operand.number, ZERO);
         } else if (source_address_method == IMMEDIATE && dest_address_method == REGISTER_DIRECT) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
             insertRegisterCodeWord(codeHead, 0, dest_operand.register_operand.registerNumber);
-            insertDataCodeWord(codeHead, source_operand.number, ZERO);
+            insertDataNumberCodeWord(codeHead, source_operand.number, ZERO);
         } else if (source_address_method == IMMEDIATE && dest_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
-            insertDataCodeWord(codeHead, source_operand.number, ZERO);
-            insertDataCodeWord(codeHead, dest_operand.number, ONE_ZERO);
+            insertDataNumberCodeWord(codeHead, source_operand.number, ZERO);
+            insertDataLabelCodeWord(codeHead, dest_operand.label, ONE_ZERO);
         } else if (source_address_method == IMMEDIATE && dest_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
-            insertDataCodeWord(codeHead, source_operand.number, ZERO);
-            insertDataCodeWord(codeHead, dest_operand.number, ZERO);
+            insertDataNumberCodeWord(codeHead, source_operand.number, ZERO);
+            insertDataNumberCodeWord(codeHead, dest_operand.number, ZERO);
         }
 
     }

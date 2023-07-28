@@ -11,11 +11,11 @@ int get_label_from_string(char *string, char *label);
 
 int get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand);
 void insertInstructionCodeWord(CodeWord **head, enum e_address source, unsigned int opcode, enum e_address dest);
-
+void insertDataLabelCodeWord(CodeWord **head, char *label, enum e_are are);
 void insertRegisterCodeWord(CodeWord **head, enum e_registers source_register,
                             enum e_registers dest_register);
 
-void insertDataCodeWord(CodeWord **head, signed int value, enum e_are are);
+void insertDataNumberCodeWord(CodeWord **head, signed int value, enum e_are are);
 
 void printCodeWordList(CodeWord **head);
 

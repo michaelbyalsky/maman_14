@@ -219,7 +219,7 @@ Instruction instructions[] = {
         {"jsr",  JSR,                   jsr_source,       jsr_dest,       0, 2, 1},
         {"rts",  RTS,                   rts_source,       rts_dest,       0, 0, 0},
         {"stop", STOP,                  stop_source,      stop_dest,      0, 0, 0},
-        {"",     INSTRUCTION_NOT_FOUND, not_found_source, not_found_dest, 0}
+        {"",     INSTRUCTION_NOT_FOUND, not_found_source, not_found_dest, 0, 0, 0}
 };
 
 Instruction findInstructionByName(const char *name) {
@@ -298,8 +298,8 @@ void insertRegisterCodeWord(CodeWord **head, enum e_registers source_register,
     }
 }
 
-void insertDataCodeWord(CodeWord **head, signed int value, enum e_are are) {
-    CodeWord *newNode = createCodeWordNode(DATA_WORD);
+void insertDataNumberCodeWord(CodeWord **head, signed int value, enum e_are are) {
+    CodeWord *newNode = createCodeWordNode(DATA_NUMBER_WORD);
     if (newNode != NULL) {
         newNode->data.are = are;
         newNode->data.value = value;
@@ -316,6 +316,27 @@ void insertDataCodeWord(CodeWord **head, signed int value, enum e_are are) {
     }
 }
 
+void insertDataLabelCodeWord(CodeWord **head, char *label, enum e_are are) {
+    CodeWord *newNode = createCodeWordNode(DATA_LABEL_WORD);
+    if (newNode != NULL) {
+        newNode->data.are = are;
+        newNode->data.label = malloc(strlen(label) + 1);
+        if (newNode->data.label == NULL) {
+            printf("Memory allocation failed.");
+        }
+        strcpy(newNode->data.label, label);
+
+        if (*head == NULL) {
+            *head = newNode;
+        } else {
+            CodeWord *current = *head;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+}
 
 void printCodeWordList(CodeWord **head) {
     CodeWord *current = *head;
@@ -327,7 +348,9 @@ void printCodeWordList(CodeWord **head) {
         } else if (current->codeWordType == REGISTER_WORD) {
             printf("Register - ARE: %u, dest: %u, source: %u\n",
                    current->registerWord.are, current->registerWord.dest, current->registerWord.source);
-        } else {
+        } else if(current->codeWordType == DATA_LABEL_WORD) {
+            printf("Data - Label: %s, ARE: %d\n", current->data.label, current->data.are);
+        }else {
             printf("Data - Value: %d, ARE: %d\n", current->data.value, current->data.are);
         }
         current = current->next;
@@ -474,8 +497,8 @@ int get_operand_from_string(char *string, Instruction instruction, Operand *oper
             char label_operand[MAX_LINE_LENGTH];
             if (get_label_from_string(string, label_operand)) {
                 if(is_valid_label(label_operand)) {
-                    operand->number = 0;
-                    operand->operandType = LABEL_O;
+                    remove_white_spaces(label_operand, 0);
+                    strcpy(operand->label, label_operand);
                     return DIRECT;
                 } else {
                     printf("Error: invalid label\n");
