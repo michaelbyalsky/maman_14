@@ -3,8 +3,7 @@ LOOP: jmp L1
 prn -5
 .extern L3
 bne LOOP
-sub @r1, @r4
-bne END
+m1
 L1: inc K
 bne LOOP
          sub @r4, @r7

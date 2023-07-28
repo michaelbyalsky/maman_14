@@ -4,13 +4,15 @@
 
 #include "pre_assembler.h"
 
+
+
 /**
  * @brief Loads macros from a file into an array of Macro structs.
  * @param filename The name of the file to load macros from.
  * @param macros The array of Macro structs to load macros into.
  * @return The number of macros loaded.
  */
-int loadMacros(const char *filename, Macro *macros) {
+int loadMacros(const char *filename, Macro **macrosHead) {
     int macroCount = 0;
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
@@ -22,28 +24,18 @@ int loadMacros(const char *filename, Macro *macros) {
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         /* check if you need to allocate more memory for macros */
-        if (macroCount == MAX_MACRO_COUNT) {
-            Macro *newMacros = realloc(macros, sizeof(Macro) * (macroCount + 1));
-            if (newMacros == NULL) {
-                printf("Error: could not allocate memory for macros\n");
-                return -1;
-            }
-            macros = newMacros;
-        }
 
         if (strncmp(line, "mcro ", 5) == 0) {
             char macroName[MAX_MACRO_NAME_LENGTH];
             char macroValue[MAX_LINE_LENGTH];
             sscanf(line, "%*s %s", macroName);
-            strcpy(macros[macroCount].name, macroName);
             macroValue[0] = '\0';
             fgets(line, sizeof(line), file); /* read the next line */
             while (strncmp(line, "endmcro", 7) != 0) {
                 strcat(macroValue, line);
                 fgets(line, sizeof(line), file); /* read the next line */
             }
-            strcpy(macros[macroCount].value, macroValue);
-
+            insertMacro(macrosHead, createMacro(macroName, macroValue));
             macroCount++;
         }
     }
@@ -58,7 +50,7 @@ int loadMacros(const char *filename, Macro *macros) {
  * @param macros The array of Macro structs containing the macros to replace.
  * @param macroCount The number of macros in the macros array.
  */
-void replaceMacros(const char *filename, Macro *macros, int macroCount, const char *outputFilename) {
+void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, const char *outputFilename) {
     char line[MAX_LINE_LENGTH];
     int insideMacro = 0;  /* Flag to track if we are inside a macro paragraph */
     FILE *inputFile = fopen(filename, "r");
@@ -87,17 +79,22 @@ void replaceMacros(const char *filename, Macro *macros, int macroCount, const ch
             }
         } else {
             /* Iterate over all the macros and replace their occurrences in the line */
-            int macroIndex;
-            for (macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
-                char *macroName = macros[macroIndex].name;
-                char *macroValue = macros[macroIndex].value;
+            Macro *current = *macrosHead;
+            while (current) {
+                current = current->next;
+                if (current == NULL) {
+                    break;
+                }
+                char *macroName = current->name;
+                char *macroValue = current->value;
 
                 char *macroPosition;
                 /* check if the macro name is in the line */
                 if ((macroPosition = strstr(line, macroName)) != NULL) {
                     unsigned int macroValueLength = strlen(macroValue);
                     /* Replace macro with its value */
-                    strncpy(macroPosition, macroValue, macroValueLength); /* Copy the macro value over the macro name */
+                    strncpy(macroPosition, macroValue,
+                            macroValueLength); /* Copy the macro value over the macro name */
                     /* add \0 to the end of the line */
                     line[macroPosition - line + macroValueLength] = '\0';
                 }
@@ -137,20 +134,71 @@ char *createOutputFilename(const char *filename) {
  * @param filename The name of the file to pre-assemble.
  * @return The name of the output file.
  */
-char* pre_assemble(const char *filename) {
-    Macro *macros = malloc(sizeof(Macro) * MAX_MACRO_COUNT);
-    int macroCount = loadMacros(filename, macros);
+char *pre_assemble(const char *filename) {
+    Macro *macrosHead = NULL;
+    int macroCount = loadMacros(filename, &macrosHead);
     char *outputFilename = createOutputFilename(filename);
 
-    if (macroCount > 0) {
-        replaceMacros(filename, macros, macroCount, outputFilename);
-        printf("pre-assembled successfully.\n");
-    } else {
-        printf("No macros found in the file.\n");
+    if (macroCount == 0) {
+        printf("No macros found.\n");
     }
+    replaceMacros(filename, &macrosHead, macroCount, outputFilename);
+    printf("pre-assembled successfully.\n");
 
-    free(macros);
+
+    freeMacroList(&macrosHead);
 
     return outputFilename;
 }
 
+
+Macro *createMacro(const char *name, const char *value) {
+    Macro *newMacro = (Macro *) malloc(sizeof(Macro));
+    if (newMacro != NULL) {
+        strncpy(newMacro->name, name, MAX_MACRO_NAME_LENGTH - 1);
+        newMacro->name[MAX_MACRO_NAME_LENGTH - 1] = '\0';
+        strncpy(newMacro->value, value, MAX_LINE_LENGTH - 1);
+        newMacro->value[MAX_LINE_LENGTH - 1] = '\0';
+        newMacro->next = NULL;
+    }
+    return newMacro;
+}
+
+void insertMacro(Macro **head, Macro *newMacro) {
+    if (*head == NULL) {
+        *head = newMacro;
+    } else {
+        Macro *current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newMacro;
+    }
+}
+
+Macro *findMacro(Macro **head, const char *name) {
+    Macro *current = *head;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            return current; // Macro found
+        }
+        current = current->next;
+    }
+    return NULL; // Macro not found
+}
+
+void freeMacroList(Macro **head) {
+    while (*head != NULL) {
+        Macro *temp = *head;
+        *head = (*head)->next;
+        free(temp);
+    }
+}
+
+void iterateMacroList(Macro **head, void (*callback)(Macro *)) {
+    Macro *current = *head;
+    while (current != NULL) {
+        callback(current);
+        current = current->next;
+    }
+}
