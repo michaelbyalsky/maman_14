@@ -22,7 +22,7 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
 int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
                           char *label);
 
-int handle_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
+int handle_entry_or_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
                             Label **labelHead, char *label);
 
 int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
@@ -225,9 +225,13 @@ handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data
     } else if (directive == STRING) {
         handle_string_directive(line, line_index, ic, dc, data_img, labelHead, label);
     } else if (directive == ENTRY) {
-        /* handle entry directive */
+        /* move the line_index 5 characters forward to skip the "entry" */
+        *line_index += 5;
+        handle_entry_or_extern_directive(line, line_index, ic, dc, data_img, labelHead, label);
     } else if (directive == EXTERN) {
-        handle_extern_directive(line, line_index, ic, dc, data_img, labelHead, label);
+        /* move the line_index 6 characters forward to skip the "extern" */
+        *line_index += 6;
+        handle_entry_or_extern_directive(line, line_index, ic, dc, data_img, labelHead, label);
     }
 }
 
@@ -267,7 +271,7 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
     (*line_index)++;
 }
 
-int handle_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
+int handle_entry_or_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
                             Label **labelHead, char *label) {
     char extern_label[MAX_LABEL_SIZE];
     extern_label[0] = '\0';

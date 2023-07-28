@@ -1,6 +1,7 @@
-                   MAIN: mov @r3 ,LENGTH
+MAIN: mov @r3 ,LENGTH
 LOOP: jmp L1
 prn -5
+.extern L3
 bne LOOP
 sub @r1, @r4
 bne END
