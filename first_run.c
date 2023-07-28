@@ -8,8 +8,6 @@
 
 int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead);
 
-int is_valid_label(const char *label);
-
 int find_label(char *line, char *label, int *line_index);
 
 int
@@ -23,6 +21,9 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
 
 int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
                           char *label);
+
+int handle_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
+                            Label **labelHead, char *label);
 
 int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                        char *label);
@@ -47,9 +48,8 @@ int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **lab
     /*line index*/
     int i = 0;
 
-    if (is_empty_line(line)) {
-        return 0;
-    }
+    SKIP_WHITE_SPACES(line, i);
+
     char label[MAX_LABEL_SIZE];
     label[0] = '\0';
     /* check if line contains a label */
@@ -67,12 +67,121 @@ int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **lab
         handle_instruction(line, &i, ic, dc, labelHead, codeHead, label);
         return 1;
     }
+
+    if (is_empty_line(line)) {
+        return 0;
+    }
 }
 
 int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                        char *label) {
-    Instruction instruction = findInstructionByName(line);
-    printf("instruction: %s\n", instruction.name);
+    Instruction instruction = findInstructionByName(&line[*line_index]);
+    if (instruction.opcode == -1) {
+        printf("Error: instruction not found\n");
+        return -1;
+    }
+    /* move the line_index 4 characters forward to skip the instruction name */
+    *line_index += strlen(instruction.name);
+    SKIP_WHITE_SPACES(line, *line_index);
+    int num_of_operands = 0;
+    enum e_address source_address_method;
+    enum e_address dest_address_method;
+    Operand source_operand;
+    Operand dest_operand;
+    /* check if the instruction has operands */
+    /* iterate other instruction allowedSourceAddressingMethods */
+
+    if (instruction.numberOfOperands == 1) {
+        source_address_method = get_operand_from_string(&line[*line_index], instruction, &source_operand, 0);
+    } else {
+        source_address_method = get_operand_from_string(&line[*line_index], instruction, &source_operand, 1);
+    }
+
+    if (source_address_method) {
+        num_of_operands++;
+        /* move the line_index to the next character after the operand */
+        while (line[*line_index] != ',' && line[*line_index] != '\0' && line[*line_index] != '\n') {
+            (*line_index)++;
+        }
+    }
+
+    SKIP_WHITE_SPACES(line, *line_index);
+    /* check if there is a comma, if not we cane to the end of the line */
+    if (line[*line_index] == ',') {
+        (*line_index)++;
+        SKIP_WHITE_SPACES(line, *line_index);
+
+        dest_address_method = get_operand_from_string(&line[*line_index], instruction, &dest_operand, 0);
+        if (dest_address_method) {
+            num_of_operands++;
+        }
+    }
+
+    if (num_of_operands != instruction.numberOfOperands) {
+        printf("Error: instruction %s must have %d operands\n", instruction.name, instruction.numberOfOperands);
+        return -1;
+    }
+
+
+    if (is_valid_label(label)) {
+        insertLabelNode(labelHead, label, *ic, CODE_LABEL);
+    }
+
+    if (num_of_operands == 0) {
+        insertInstructionCodeWord(codeHead, 0, instruction.opcode, 0);
+    } else if (num_of_operands == 1) {
+        if (source_address_method == REGISTER_DIRECT) {
+            insertInstructionCodeWord(codeHead, 0, instruction.opcode, source_address_method);
+            insertRegisterCodeWord(codeHead, 0, source_operand.register_operand.registerNumber);
+        } else if (source_address_method == DIRECT) {
+            insertInstructionCodeWord(codeHead, 0, instruction.opcode, source_address_method);
+            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
+        } else if (source_address_method == IMMEDIATE) {
+            insertInstructionCodeWord(codeHead, 0, instruction.opcode, source_address_method);
+            insertDataCodeWord(codeHead, source_operand.number, ZERO);
+        }
+    } else {
+        if (source_address_method == REGISTER_DIRECT && dest_address_method == REGISTER_DIRECT) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertRegisterCodeWord(codeHead, source_operand.register_operand.registerNumber,
+                                   dest_operand.register_operand.registerNumber);
+        } else if (source_address_method == REGISTER_DIRECT && dest_address_method == DIRECT) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertRegisterCodeWord(codeHead, source_operand.register_operand.registerNumber, 0);
+            insertDataCodeWord(codeHead, dest_operand.number, ONE_ZERO);
+        } else if (source_address_method == REGISTER_DIRECT && dest_address_method == IMMEDIATE) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertRegisterCodeWord(codeHead, source_operand.register_operand.registerNumber, 0);
+            insertDataCodeWord(codeHead, dest_operand.number, ZERO);
+        } else if (source_address_method == DIRECT && dest_address_method == REGISTER_DIRECT) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertRegisterCodeWord(codeHead, 0, dest_operand.register_operand.registerNumber);
+            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
+        } else if (source_address_method == DIRECT && dest_address_method == DIRECT) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
+            insertDataCodeWord(codeHead, dest_operand.number, ONE_ZERO);
+        } else if (source_address_method == DIRECT && dest_address_method == IMMEDIATE) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertDataCodeWord(codeHead, source_operand.number, ONE_ZERO);
+            insertDataCodeWord(codeHead, dest_operand.number, ZERO);
+        } else if (source_address_method == IMMEDIATE && dest_address_method == REGISTER_DIRECT) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertRegisterCodeWord(codeHead, 0, dest_operand.register_operand.registerNumber);
+            insertDataCodeWord(codeHead, source_operand.number, ZERO);
+        } else if (source_address_method == IMMEDIATE && dest_address_method == DIRECT) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertDataCodeWord(codeHead, source_operand.number, ZERO);
+            insertDataCodeWord(codeHead, dest_operand.number, ONE_ZERO);
+        } else if (source_address_method == IMMEDIATE && dest_address_method == IMMEDIATE) {
+            insertInstructionCodeWord(codeHead, source_address_method, instruction.opcode, dest_address_method);
+            insertDataCodeWord(codeHead, source_operand.number, ZERO);
+            insertDataCodeWord(codeHead, dest_operand.number, ZERO);
+        }
+
+    }
+    (*ic)++;
+    return 1;
 }
 
 int find_label(char *line, char *label, int *line_index) {
@@ -84,6 +193,7 @@ int find_label(char *line, char *label, int *line_index) {
     sscanf(line, "%[^:]", label); /* read until ":" the [^:] means read until ":" */
     label[strlen(label)] = '\0'; /* add the null terminator to the label */
     /* move the line pointer to the next character after the label */
+    remove_white_spaces(label, 0);
     *line_index += strlen(label) + 1;
 
     /* check if the label is valid */
@@ -93,31 +203,6 @@ int find_label(char *line, char *label, int *line_index) {
     return 0;
 }
 
-
-int is_valid_label(const char *label) {
-    size_t len = strlen(label);
-
-    /* Check the length of the label (must be at most 31 characters) */
-    if (len == 0 || len > 31) {
-        return 0; /* false */
-    }
-
-    /* Check if the label starts with an alphabetic character */
-    if (!isalpha(label[0])) {
-        return 0; /* false */
-    }
-
-    /* Check if the remaining characters are valid label characters */
-    int i;
-    for (i = 1; i < len; ++i) {
-        /* Check if the character is an alphanumeric character */
-        if (!isalnum(label[i])) {
-            return 0; /* false */
-        }
-    }
-
-    return 1; /* true */
-}
 
 int is_directive(const char *line, const int *line_index) {
     if (line[*line_index] == '.') {
@@ -142,7 +227,7 @@ handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data
     } else if (directive == ENTRY) {
         /* handle entry directive */
     } else if (directive == EXTERN) {
-        /* handle extern directive */
+        handle_extern_directive(line, line_index, ic, dc, data_img, labelHead, label);
     }
 }
 
@@ -180,6 +265,15 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
         (*line_index)++;
     }
     (*line_index)++;
+}
+
+int handle_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
+                            Label **labelHead, char *label) {
+    char extern_label[MAX_LABEL_SIZE];
+    extern_label[0] = '\0';
+    SKIP_WHITE_SPACES(line, *line_index);
+    get_label_from_string(&line[*line_index], extern_label);
+    insertLabelNode(labelHead, extern_label, 0, EXTERN_LABEL);
 }
 
 int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,

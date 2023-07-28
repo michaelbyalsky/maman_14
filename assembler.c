@@ -30,7 +30,6 @@ static int process_file(char *filename) {
     if (outputFileName == NULL) {
         return -1;
     }
-
     /* first run */
     first_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
 
@@ -46,6 +45,9 @@ static int process_file(char *filename) {
 
     /* print the label list */
     printLabelList(&labelHead);
-
     freeLabelList(&labelHead);
+
+    printCodeWordList(&codeHead);
+    freeCodeWordList(&codeHead);
+
 }

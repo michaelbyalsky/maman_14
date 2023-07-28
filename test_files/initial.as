@@ -1,4 +1,4 @@
-MAIN: mov @r3 ,LENGTH
+                   MAIN: mov @r3 ,LENGTH
 LOOP: jmp L1
 mcro m1
 sub @r1, @r4
@@ -7,7 +7,7 @@ endmcro
 prn -5
 bne LOOP
 mcro m2
-sub @r4, @r7
+         sub @r4, @r7
 bne END
 endmcro
 m1

@@ -126,10 +126,10 @@ Instruction instructions[] = {
 };
 
 Directive directives[] = {
-        {"data",   RELOCATABLE},
-        {"string", RELOCATABLE},
-        {"entry",  RELOCATABLE},
-        {"extern", EXTERNAL}
+        {"data",   ONE_ZERO},
+        {"string", ONE_ZERO},
+        {"entry",  ONE_ZERO},
+        {"extern", ZERO_ONE}
 };
 
 Register registers[] = {

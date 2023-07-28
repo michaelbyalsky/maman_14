@@ -58,14 +58,15 @@ int find_directive_by_name(char *line) {
 
 
 Register registers[] = {
-        {"r0", R0},
-        {"r1", R1},
-        {"r2", R2},
-        {"r3", R3},
-        {"r4", R4},
-        {"r5", R5},
-        {"r6", R6},
-        {"r7", R7}
+        {"@r0", R0},
+        {"@r1", R1},
+        {"@r2", R2},
+        {"@r3", R3},
+        {"@r4", R4},
+        {"@r5", R5},
+        {"@r6", R6},
+        {"@r7", R7},
+        {"",   REGISTER_NOT_FOUND}
 };
 
 /**
@@ -77,18 +78,20 @@ int is_valid_number(const char *str) {
     if (*str == '-' || *str == '+') {
         ++str;
     }
-    while (*str) {
+    while (*str != '\0') {
+
+        printf("char: %c\n", *str);
         if (!isdigit(*str)) {
             return 0;
         }
-        ++str;
+        str++;
     }
     return 1;
 }
 
 /* Function to create a new node for the linked list */
 Label *createLabelNode(const char *name, long address, enum e_label_type type) {
-    Label *newNode = (Label *)malloc(sizeof(Label));
+    Label *newNode = (Label *) malloc(sizeof(Label));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
         exit(EXIT_FAILURE);
@@ -148,32 +151,82 @@ Label *findLabelByNameAndType(Label **head, const char *name, enum e_label_type 
     return NULL;
 }
 
+enum e_address mov_source[] = {IMMEDIATE, DIRECT, REGISTER_DIRECT};
+enum e_address mov_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address cmp_source[] = {IMMEDIATE, DIRECT, REGISTER_DIRECT};
+enum e_address cmp_dest[] = {IMMEDIATE, DIRECT, REGISTER_DIRECT};
+
+enum e_address add_source[] = {IMMEDIATE, DIRECT, REGISTER_DIRECT};
+enum e_address add_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address sub_source[] = {IMMEDIATE, DIRECT, REGISTER_DIRECT};
+enum e_address sub_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address not_source[] = {NOT_EXISTS};
+enum e_address not_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address clr_source[] = {NOT_EXISTS};
+enum e_address clr_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address lea_source[] = {DIRECT};
+enum e_address lea_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address inc_source[] = {NOT_EXISTS};
+enum e_address inc_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address dec_source[] = {NOT_EXISTS};
+enum e_address dec_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address jmp_source[] = {NOT_EXISTS};
+enum e_address jmp_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address bne_source[] = {NOT_EXISTS};
+enum e_address bne_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address red_source[] = {NOT_EXISTS};
+enum e_address red_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address prn_source[] = {NOT_EXISTS};
+enum e_address prn_dest[] = {IMMEDIATE, DIRECT, REGISTER_DIRECT};
+
+enum e_address jsr_source[] = {NOT_EXISTS};
+enum e_address jsr_dest[] = {DIRECT, REGISTER_DIRECT};
+
+enum e_address rts_source[] = {NOT_EXISTS};
+enum e_address rts_dest[] = {NOT_EXISTS};
+
+enum e_address stop_source[] = {NOT_EXISTS};
+enum e_address stop_dest[] = {NOT_EXISTS};
+
+enum e_address not_found_source[] = {NOT_EXISTS};
+enum e_address not_found_dest[] = {NOT_EXISTS};
 
 Instruction instructions[] = {
-        {"mov",  MOV,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {DIRECT,    REGISTER_DIRECT}},
-        {"cmp",  CMP,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {IMMEDIATE, DIRECT, REGISTER_DIRECT}},
-        {"add",  ADD,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {DIRECT,    REGISTER_DIRECT}},
-        {"sub",  SUB,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {DIRECT,    REGISTER_DIRECT}},
-        {"not",  NOT,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"clr",  CLR,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"lea",  LEA,  {DIRECT},                             {DIRECT,    REGISTER_DIRECT}},
-        {"inc",  INC,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"dec",  DEC,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"jmp",  JMP,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"bne",  BNE,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"red",  RED,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"prn",  PRN,  {NOT_EXISTS},                         {IMMEDIATE, DIRECT, REGISTER_DIRECT}},
-        {"jsr",  JSR,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
-        {"rts",  RTS,  {NOT_EXISTS},                         {NOT_EXISTS}},
-        {"stop", STOP, {NOT_EXISTS},                         {NOT_EXISTS}},
-        {"",     INSTRUCTION_NOT_FOUND, {NOT_EXISTS},                         {NOT_EXISTS}}
+        {"mov",  MOV,                   mov_source,       mov_dest,       3, 2, 2},
+        {"cmp",  CMP,                   cmp_source,       cmp_dest,       3, 3, 2},
+        {"add",  ADD,                   add_source,       add_dest,       3, 2, 2},
+        {"sub",  SUB,                   sub_source,       sub_dest,       3, 2, 2},
+        {"not",  NOT,                   not_source,       not_dest,       0, 2, 1},
+        {"clr",  CLR,                   clr_source,       clr_dest,       0, 2, 1},
+        {"lea",  LEA,                   lea_source,       lea_dest,       1, 2, 2},
+        {"inc",  INC,                   inc_source,       inc_dest,       0, 2, 1},
+        {"dec",  DEC,                   dec_source,       dec_dest,       0, 2, 1},
+        {"jmp",  JMP,                   jmp_source,       jmp_dest,       0, 2, 1},
+        {"bne",  BNE,                   bne_source,       bne_dest,       0, 2, 1},
+        {"red",  RED,                   red_source,       red_dest,       0, 2, 1},
+        {"prn",  PRN,                   prn_source,       prn_dest,       0, 3, 1},
+        {"jsr",  JSR,                   jsr_source,       jsr_dest,       0, 2, 1},
+        {"rts",  RTS,                   rts_source,       rts_dest,       0, 0, 0},
+        {"stop", STOP,                  stop_source,      stop_dest,      0, 0, 0},
+        {"",     INSTRUCTION_NOT_FOUND, not_found_source, not_found_dest, 0}
 };
 
 Instruction findInstructionByName(const char *name) {
     int i, j;
 
     for (i = 0; i < sizeof(instructions) / sizeof(Instruction); ++i) {
-        for(j = 0; j < strlen(instructions[i].name); ++j) {
+        for (j = 0; j < strlen(instructions[i].name); ++j) {
             if (name[j] != instructions[i].name[j]) {
                 break;
             }
@@ -192,40 +245,91 @@ int is_instruction(char *line) {
 
 
 /* Function to create a new node for the codeWord linked list */
-CodeWord *createCodeWordNode(unsigned int ARE, unsigned int dest, unsigned int opcode, unsigned int source) {
-    CodeWord *newNode = (CodeWord *)malloc(sizeof(CodeWord));
+
+CodeWord *createCodeWordNode(enum e_code_word_type codeWordType) {
+    CodeWord *newNode = (CodeWord *) malloc(sizeof(CodeWord));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
         exit(EXIT_FAILURE);
     }
-    newNode->ARE = ARE;
-    newNode->dest = dest;
-    newNode->opcode = opcode;
-    newNode->source = source;
+    newNode->codeWordType = codeWordType;
     newNode->next = NULL;
+
     return newNode;
 }
 
-/* Function to insert a new node at the end of the codeWord linked list */
-void insertCodeWordNode(CodeWord **head, unsigned int ARE, unsigned int dest, unsigned int opcode, unsigned int source) {
-    CodeWord *newNode = createCodeWordNode(ARE, dest, opcode, source);
-    if (*head == NULL) {
-        *head = newNode;
-    } else {
-        CodeWord *current = *head;
-        while (current->next != NULL) {
-            current = current->next;
+void insertInstructionCodeWord(CodeWord **head, enum e_address source, unsigned int opcode, enum e_address dest) {
+    CodeWord *newNode = createCodeWordNode(INSTRUCTION_WORD);
+    if (newNode != NULL) {
+        newNode->instruction.are = ZERO;
+        newNode->instruction.dest = dest;
+        newNode->instruction.opcode = opcode;
+        newNode->instruction.source = source;
+
+        if (*head == NULL) {
+            *head = newNode;
+        } else {
+            CodeWord *current = *head;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = newNode;
         }
-        current->next = newNode;
     }
 }
 
-/* Function to print the codeWord linked list */
+void insertRegisterCodeWord(CodeWord **head, enum e_registers source_register,
+                            enum e_registers dest_register) {
+    CodeWord *newNode = createCodeWordNode(REGISTER_WORD);
+    if (newNode != NULL) {
+        newNode->registerWord.are = ZERO;
+        newNode->registerWord.source = source_register;
+        newNode->registerWord.dest = dest_register;
+
+        if (*head == NULL) {
+            *head = newNode;
+        } else {
+            CodeWord *current = *head;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+}
+
+void insertDataCodeWord(CodeWord **head, signed int value, enum e_are are) {
+    CodeWord *newNode = createCodeWordNode(DATA_WORD);
+    if (newNode != NULL) {
+        newNode->data.are = are;
+        newNode->data.value = value;
+
+        if (*head == NULL) {
+            *head = newNode;
+        } else {
+            CodeWord *current = *head;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+}
+
+
 void printCodeWordList(CodeWord **head) {
     CodeWord *current = *head;
     while (current != NULL) {
-        printf("ARE: %d, dest: %d, opcode: %d, source: %d\n", current->ARE, current->dest, current->opcode,
-               current->source);
+        if (current->codeWordType == INSTRUCTION_WORD) {
+            printf("Instruction - ARE: %u, dest: %u, opcode: %u, source: %u\n",
+                   current->instruction.are, current->instruction.dest, current->instruction.opcode,
+                   current->instruction.source);
+        } else if (current->codeWordType == REGISTER_WORD) {
+            printf("Register - ARE: %u, dest: %u, source: %u\n",
+                   current->registerWord.are, current->registerWord.dest, current->registerWord.source);
+        } else {
+            printf("Data - Value: %d, ARE: %d\n", current->data.value, current->data.are);
+        }
         current = current->next;
     }
 }
@@ -237,4 +341,158 @@ void freeCodeWordList(CodeWord **head) {
         current = current->next;
         free(temp);
     }
+    *head = NULL;
+}
+
+/**
+ * @brief gets a string that it's first character is a number and returns the number
+ * @param string
+ * @return int
+ */
+int get_number_from_string(char *string, int *number) {
+    int i = 0;
+    char temp_num[MAX_LINE_LENGTH];
+    temp_num[0] = '\0';
+    if (string[i] == '-') {
+        temp_num[0] = '-';
+        i++;
+    }
+
+
+    if (isdigit(string[i])) {
+        while (string[i] != '\0' && string[i] != ' ' && string[i] != '\t' && string[i] != '\n') {
+            temp_num[i] = string[i];
+            i++;
+        }
+        temp_num[i] = '\0';
+
+        /* check if the number found */
+
+        if (!is_valid_number(temp_num)) {
+            printf("Error: invalid number\n");
+            return -1;
+        }
+
+        *number = atoi(temp_num);
+
+        return 1;
+    }
+
+    return 0;
+
+}
+
+
+Register findRegisterByName(const char *name) {
+    int i;
+    int j;
+    for (i = 0; i < sizeof(registers) / sizeof(Register); ++i) {
+        for (j = 0; j < strlen(registers[i].name); ++j) {
+            if (name[j] != registers[i].name[j]) {
+                break;
+            }
+            if (j == strlen(registers[i].name) - 1) {
+                return registers[i];
+            }
+        }
+    }
+    return registers[8];
+}
+
+int is_valid_label(const char *label) {
+    size_t len = strlen(label);
+
+    /* Check the length of the label (must be at most 31 characters) */
+    if (len == 0 || len > 31) {
+        return 0; /* false */
+    }
+
+    /* Check if the label starts with an alphabetic character */
+    if (!isalpha(label[0])) {
+        return 0; /* false */
+    }
+
+    /* Check if the remaining characters are valid label characters */
+    int i;
+    for (i = 1; i < len; ++i) {
+        /* Check if the character is an alphanumeric character */
+        if (!isalnum(label[i])) {
+            return 0; /* false */
+        }
+    }
+
+    return 1; /* true */
+}
+
+
+/**
+ * @brief gets a string and returns the label in it
+ * @param string
+ * @param label
+ * @return
+ */
+int get_label_from_string(char *string, char *label) {
+    if (!isalpha(string[0])) {
+        return 0;
+    }
+    int i = 0;
+    while (string[i] != '\0' && string[i] != ' ' && string[i] != '\t' && string[i] != ':' && string[i] != '\n') {
+        label[i] = string[i];
+        i++;
+    }
+    label[i] = '\0';
+    return is_valid_label(label);
+}
+
+int get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand) {
+    int i;
+    enum e_address *addressingMethods;
+    int numberOfAddressingMethods;
+    if (isSourceOperand) {
+        addressingMethods = instruction.allowedSourceAddressingMethods;
+        numberOfAddressingMethods = instruction.allowedSourceAddressingMethodsCount;
+    } else {
+        addressingMethods = instruction.allowedDestAddressingMethods;
+        numberOfAddressingMethods = instruction.allowedDestAddressingMethodsCount;
+    }
+
+    for (i = 0; i < numberOfAddressingMethods; ++i) {
+        if (addressingMethods[i] == NOT_EXISTS) {
+            return NOT_EXISTS;
+        }
+
+        if (addressingMethods[i] == IMMEDIATE) {
+            int number_operand;
+            if (get_number_from_string(string, &number_operand)) {
+                operand->number = number_operand;
+                operand->operandType = NUMBER_O;
+                return IMMEDIATE;
+            }
+        }
+
+        if (addressingMethods[i] == DIRECT) {
+            char label_operand[MAX_LINE_LENGTH];
+            if (get_label_from_string(string, label_operand)) {
+                if(is_valid_label(label_operand)) {
+                    operand->number = 0;
+                    operand->operandType = LABEL_O;
+                    return DIRECT;
+                } else {
+                    printf("Error: invalid label\n");
+                    return 0;
+                }
+            }
+        }
+
+        if (addressingMethods[i] == REGISTER_DIRECT) {
+            Register register_operand = findRegisterByName(string);
+            if (register_operand.registerNumber != -1) {
+                operand->register_operand = register_operand;
+                operand->operandType = REGISTER_O;
+                return REGISTER_DIRECT;
+            }
+        }
+    }
+
+    return NOT_EXISTS;
 }
