@@ -12,7 +12,7 @@ int get_number_from_string(char *string, int *number);
 
 int is_valid_label(const char *label);
 
-int get_label_from_string(char *string, char *label);
+int get_label_from_string(const char *string, char *label);
 
 int is_empty_line(char *s);
 

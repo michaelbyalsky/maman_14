@@ -1,6 +1,5 @@
 #include "pre_assembler.h"
 #include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 #include "first_run.h"
@@ -38,9 +37,9 @@ static int process_file(char *filename) {
     int i;
     for (i = 0; i < dc; ++i) {
         if (data_img[i].datatype == DATA) {
-            printf("%d: %d\n", i, data_img[i].number);
+            printf("%d: %d\n", i, data_img[i].NumberStringUnion.number);
         } else if (data_img[i].datatype == STRING) {
-            printf("%d: %s\n", i, data_img[i].string);
+            printf("%d: %s\n", i, data_img[i].NumberStringUnion.string);
         }
     }
 

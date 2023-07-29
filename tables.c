@@ -77,10 +77,10 @@ CodeWord *createCodeWordNode(enum codeWordType codeWordType) {
 void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest) {
     CodeWord *newNode = createCodeWordNode(INSTRUCTION_WORD);
     if (newNode != NULL) {
-        newNode->instruction.are = ZERO;
-        newNode->instruction.dest = dest;
-        newNode->instruction.opcode = opcode;
-        newNode->instruction.source = source;
+        newNode->are = ZERO;
+        newNode->CodeWordUnion.instruction.dest = dest;
+        newNode->CodeWordUnion.instruction.opcode = opcode;
+        newNode->CodeWordUnion.instruction.source = source;
 
         if (*head == NULL) {
             *head = newNode;
@@ -98,9 +98,9 @@ void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
                             enum Register dest_register) {
     CodeWord *newNode = createCodeWordNode(REGISTER_WORD);
     if (newNode != NULL) {
-        newNode->registerWord.are = ZERO;
-        newNode->registerWord.source = source_register;
-        newNode->registerWord.dest = dest_register;
+        newNode->are = ZERO;
+        newNode->CodeWordUnion.registerWord.source = source_register;
+        newNode->CodeWordUnion.registerWord.dest = dest_register;
 
         if (*head == NULL) {
             *head = newNode;
@@ -117,8 +117,8 @@ void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
 void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are) {
     CodeWord *newNode = createCodeWordNode(DATA_NUMBER_WORD);
     if (newNode != NULL) {
-        newNode->data.are = are;
-        newNode->data.value = value;
+        newNode->are = are;
+        newNode->CodeWordUnion.data.dataUnion.value = value;
 
         if (*head == NULL) {
             *head = newNode;
@@ -135,12 +135,12 @@ void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are) {
 void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are) {
     CodeWord *newNode = createCodeWordNode(DATA_LABEL_WORD);
     if (newNode != NULL) {
-        newNode->data.are = are;
-        newNode->data.label = malloc(strlen(label) + 1);
-        if (newNode->data.label == NULL) {
+        newNode->are = are;
+        newNode->CodeWordUnion.data.dataUnion.label = malloc(strlen(label) + 1);
+        if (newNode->CodeWordUnion.data.dataUnion.label == NULL) {
             printf("Memory allocation failed.");
         }
-        strcpy(newNode->data.label, label);
+        strcpy(newNode->CodeWordUnion.data.dataUnion.label, label);
 
         if (*head == NULL) {
             *head = newNode;
@@ -160,15 +160,15 @@ void printCodeWordList(CodeWord **head) {
     while (current != NULL) {
         if (current->codeWordType == INSTRUCTION_WORD) {
             printf("Instruction - ARE: %u, source: %u, opcode: %u, dest: %u\n",
-                   current->instruction.are, current->instruction.source, current->instruction.opcode,
-                   current->instruction.dest);
+                   current->are, current->CodeWordUnion.instruction.source, current->CodeWordUnion.instruction.opcode,
+                   current->CodeWordUnion.instruction.dest);
         } else if (current->codeWordType == REGISTER_WORD) {
             printf("Register - ARE: %u, source: %u, dest: %u\n",
-                   current->registerWord.are, current->registerWord.source, current->registerWord.dest);
+                   current->are, current->CodeWordUnion.registerWord.source, current->CodeWordUnion.registerWord.dest);
         } else if (current->codeWordType == DATA_LABEL_WORD) {
-            printf("Data - ARE: %d, Label: %s\n", current->data.are, current->data.label);
+            printf("Data - ARE: %d, Label: %s\n", current->are, current->CodeWordUnion.data.dataUnion.label);
         } else {
-            printf("Data - ARE: %d, Value: %d\n", current->data.are, current->data.value);
+            printf("Data - ARE: %d, Value: %d\n", current->are, current->CodeWordUnion.data.dataUnion.value);
         }
         current = current->next;
         number++;

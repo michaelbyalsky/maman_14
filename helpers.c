@@ -55,8 +55,6 @@ int is_valid_number(const char *str) {
 }
 
 
-
-
 /**
  * @brief gets a string that it's first character is a number and returns the number
  * @param string
@@ -97,6 +95,7 @@ int get_number_from_string(char *string, int *number) {
 
 
 int is_valid_label(const char *label) {
+    int i;
     size_t len = strlen(label);
     /* if last char is empty space ot "\0" remove it */
     if (label[len - 1] == 13) {
@@ -116,7 +115,6 @@ int is_valid_label(const char *label) {
     }
 
     /* Check if the remaining characters are valid label characters */
-    int i = 0;
     for (i = 1; i < len; ++i) {
         /* Check if the character is an alphanumeric character */
         if (!isalnum(label[i])) {
@@ -135,11 +133,11 @@ int is_valid_label(const char *label) {
  * @param label
  * @return
  */
-int get_label_from_string(char *string, char *label) {
+int get_label_from_string(const char *string, char *label) {
+    int i = 0;
     if (!isalpha(string[0])) {
         return 0;
     }
-    int i = 0;
     while (string[i] != '\0' && string[i] != ' ' && string[i] != '\t' && string[i] != ':' && string[i] != '\n') {
         label[i] = string[i];
         i++;

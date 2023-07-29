@@ -140,28 +140,26 @@ enum OperandType {
 typedef struct CodeWord {
     union CodeWordUnion {
         struct instruction {
-            enum Are are;
             enum AddressMethod source;
             unsigned int opcode;
             enum AddressMethod dest;
         } instruction;
 
 
-        struct data {
+        struct {
             union dataUnion {
                 signed int value;
                 char *label;
             } dataUnion;
-            enum Are are;
         } data;
 
         struct registerWord {
             enum Register source;
             enum Register dest;
-            enum Are are;
         } registerWord;
     } CodeWordUnion;
 
+    enum Are are;
     enum codeWordType codeWordType;
     struct CodeWord *next;
 } CodeWord;
