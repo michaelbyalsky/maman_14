@@ -43,6 +43,8 @@ static int process_file(char *filename) {
         }
     }
 
+    printf("ic: %ld\n", ic);
+
     /* print the label list */
     printLabelList(&labelHead);
     freeLabelList(&labelHead);

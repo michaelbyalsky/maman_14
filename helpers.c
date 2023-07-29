@@ -66,7 +66,7 @@ Register registers[] = {
         {"@r5", R5},
         {"@r6", R6},
         {"@r7", R7},
-        {"",   REGISTER_NOT_FOUND}
+        {"",    REGISTER_NOT_FOUND}
 };
 
 /**
@@ -250,7 +250,6 @@ CodeWord *createCodeWordNode(enum e_code_word_type codeWordType) {
     CodeWord *newNode = (CodeWord *) malloc(sizeof(CodeWord));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
-        exit(EXIT_FAILURE);
     }
     newNode->codeWordType = codeWordType;
     newNode->next = NULL;
@@ -339,22 +338,27 @@ void insertDataLabelCodeWord(CodeWord **head, char *label, enum e_are are) {
 }
 
 void printCodeWordList(CodeWord **head) {
+    int number = 0;
     CodeWord *current = *head;
     while (current != NULL) {
         if (current->codeWordType == INSTRUCTION_WORD) {
-            printf("Instruction - ARE: %u, dest: %u, opcode: %u, source: %u\n",
-                   current->instruction.are, current->instruction.dest, current->instruction.opcode,
-                   current->instruction.source);
+            printf("Instruction - ARE: %u, source: %u, opcode: %u, dest: %u\n",
+                   current->instruction.are, current->instruction.source, current->instruction.opcode,
+                   current->instruction.dest);
         } else if (current->codeWordType == REGISTER_WORD) {
-            printf("Register - ARE: %u, dest: %u, source: %u\n",
-                   current->registerWord.are, current->registerWord.dest, current->registerWord.source);
-        } else if(current->codeWordType == DATA_LABEL_WORD) {
-            printf("Data - Label: %s, ARE: %d\n", current->data.label, current->data.are);
-        }else {
-            printf("Data - Value: %d, ARE: %d\n", current->data.value, current->data.are);
+            printf("Register - ARE: %u, source: %u, dest: %u\n",
+                   current->registerWord.are, current->registerWord.source, current->registerWord.dest);
+        } else if (current->codeWordType == DATA_LABEL_WORD) {
+            printf("Data - ARE: %d, Label: %s\n", current->data.are, current->data.label);
+        } else {
+            printf("Data - ARE: %d, Value: %d\n", current->data.are, current->data.value);
         }
         current = current->next;
+        number++;
     }
+
+    printf("number of code words: %d\n", number);
+
 }
 
 void freeCodeWordList(CodeWord **head) {
@@ -383,7 +387,8 @@ int get_number_from_string(char *string, int *number) {
 
 
     if (isdigit(string[i])) {
-        while (string[i] != '\0' && string[i] != ' ' && string[i] != '\t' && string[i] != '\n') {
+        while (string[i] != '\0' && string[i] != ' ' && string[i] != '\t' && string[i] != '\n' &&
+               string[i] != 13) {
             temp_num[i] = string[i];
             i++;
         }
@@ -397,12 +402,11 @@ int get_number_from_string(char *string, int *number) {
         }
 
         *number = atoi(temp_num);
-
+        printf("number found: %d\n", *number);
         return 1;
     }
 
     return 0;
-
 }
 
 
@@ -424,22 +428,29 @@ Register findRegisterByName(const char *name) {
 
 int is_valid_label(const char *label) {
     size_t len = strlen(label);
+    /* if last char is empty space ot "\0" remove it */
+    if (label[len - 1] == 13) {
+        len--;
+    }
 
     /* Check the length of the label (must be at most 31 characters) */
     if (len == 0 || len > 31) {
+        printf("Error: invalid label- label must be at most 31 characters\n");
         return 0; /* false */
     }
 
     /* Check if the label starts with an alphabetic character */
     if (!isalpha(label[0])) {
+        printf("Error: invalid label- label must start with an alphabetic character\n");
         return 0; /* false */
     }
 
     /* Check if the remaining characters are valid label characters */
-    int i;
+    int i = 0;
     for (i = 1; i < len; ++i) {
         /* Check if the character is an alphanumeric character */
         if (!isalnum(label[i])) {
+            printf("Error: invalid label- label must contain only alphanumeric characters\n");
             return 0; /* false */
         }
     }
@@ -464,6 +475,8 @@ int get_label_from_string(char *string, char *label) {
         i++;
     }
     label[i] = '\0';
+    printf("label found: %s\n", label);
+    remove_white_spaces(label, 0);
     return is_valid_label(label);
 }
 
@@ -496,14 +509,9 @@ int get_operand_from_string(char *string, Instruction instruction, Operand *oper
         if (addressingMethods[i] == DIRECT) {
             char label_operand[MAX_LINE_LENGTH];
             if (get_label_from_string(string, label_operand)) {
-                if(is_valid_label(label_operand)) {
-                    remove_white_spaces(label_operand, 0);
-                    strcpy(operand->label, label_operand);
-                    return DIRECT;
-                } else {
-                    printf("Error: invalid label\n");
-                    return 0;
-                }
+                remove_white_spaces(label_operand, 0);
+                strcpy(operand->label, label_operand);
+                return DIRECT;
             }
         }
 

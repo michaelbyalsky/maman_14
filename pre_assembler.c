@@ -5,7 +5,6 @@
 #include "pre_assembler.h"
 
 
-
 /**
  * @brief Loads macros from a file into an array of Macro structs.
  * @param filename The name of the file to load macros from.
@@ -81,7 +80,6 @@ void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, con
             /* Iterate over all the macros and replace their occurrences in the line */
             Macro *current = *macrosHead;
             while (current) {
-                current = current->next;
                 if (current == NULL) {
                     break;
                 }
@@ -98,6 +96,7 @@ void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, con
                     /* add \0 to the end of the line */
                     line[macroPosition - line + macroValueLength] = '\0';
                 }
+                current = current->next;
             }
         }
 
@@ -180,11 +179,11 @@ Macro *findMacro(Macro **head, const char *name) {
     Macro *current = *head;
     while (current != NULL) {
         if (strcmp(current->name, name) == 0) {
-            return current; // Macro found
+            return current;
         }
         current = current->next;
     }
-    return NULL; // Macro not found
+    return NULL;
 }
 
 void freeMacroList(Macro **head) {
