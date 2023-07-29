@@ -2,9 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+
 #include "globals.h"
 #include "helpers.h"
-#include "first_run.h"
+#include "tables.h"
+#include "code.h"
 
 int line_number;
 int is_label;
@@ -89,8 +91,8 @@ int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **
     /* move the line_index 4 characters forward to skip the instruction name */
     *line_index += strlen(instruction.name);
     int num_of_operands = 0;
-    enum e_address operand_1_address_method;
-    enum e_address operand_2_address_method;
+    enum AddressMethod operand_1_address_method;
+    enum AddressMethod operand_2_address_method;
     char operand_1_string[MAX_LINE_LENGTH];
     char operand_2_string[MAX_LINE_LENGTH];
     char line_copy[MAX_LINE_LENGTH];

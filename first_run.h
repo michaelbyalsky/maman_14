@@ -1,6 +1,8 @@
 #ifndef MAMAN_14_FIRST_RUN_H
 #define MAMAN_14_FIRST_RUN_H
 
+#include "code.h"
+
 extern int is_label; /* flag for label in the line */
 extern int line_number; /* line number in the file */
 

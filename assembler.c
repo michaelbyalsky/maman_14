@@ -4,7 +4,8 @@
 #include <stdio.h>
 
 #include "first_run.h"
-#include "helpers.h"
+#include "code.h"
+#include "tables.h"
 
 
 static int process_file(char *filename);
