@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -ansi -Wall -pedantic
 GLOBALS_DIR=globals.h
-OUTPUT_FILES=assembler.o pre_assembler.o first_run.o helpers.o
+OUTPUT_FILES=assembler.o pre_assembler.o first_run.o helpers.o tables.o
 
 all: assembler
 
@@ -19,4 +19,7 @@ first_run.o: first_run.c first_run.h $(GLOBALS_DIR)
 
 helpers.o: helpers.c helpers.h $(GLOBALS_DIR)
 	$(CC) $(CFLAGS) -c helpers.c
+
+tables.o: tables.c tables.h $(GLOBALS_DIR)
+	$(CC) $(CFLAGS) -c tables.c
 

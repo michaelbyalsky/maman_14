@@ -164,6 +164,11 @@ typedef struct {
     enum e_operand_type operandType;
 } Operand;
 
+typedef struct FuncResult {
+    int result;
+    char *message;
+} FuncResult;
+
 
 #endif
 

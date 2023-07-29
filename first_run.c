@@ -6,6 +6,9 @@
 #include "helpers.h"
 #include "first_run.h"
 
+int line_number;
+int is_label;
+
 int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead);
 
 int find_label(char *line, char *label, int *line_index);
@@ -38,8 +41,10 @@ int first_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **la
 
     char line[MAX_LINE_LENGTH];
 
+    line_number = 1;
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         process_line(line, ic, dc, data_img, labelHead, codeHead);
+        line_number++;
     }
 
 }
@@ -53,7 +58,7 @@ int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **lab
     char label[MAX_LABEL_SIZE];
     label[0] = '\0';
     /* check if line contains a label */
-    find_label(line, label, &i);
+    is_label = find_label(line, label, &i);
 
 
     SKIP_WHITE_SPACES(line, i);
@@ -130,7 +135,7 @@ int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **
         operand_2_address_method = get_operand_from_string(operand_2_string, instruction, &operand_2, 0);
     }
 
-    if (is_valid_label(label)) {
+    if (is_label) {
         insertLabelNode(labelHead, label, *ic, CODE_LABEL);
     }
 
