@@ -45,7 +45,6 @@ int is_valid_number(const char *str) {
     }
     while (*str != '\0') {
 
-        printf("char: %c\n", *str);
         if (!isdigit(*str)) {
             return 0;
         }
@@ -58,11 +57,14 @@ int is_valid_number(const char *str) {
 /**
  * @brief gets a string that it's first character is a number and returns the number
  * @param string
- * @return int
+ * @return FuncResult
  */
-int get_number_from_string(char *string, int *number) {
+FuncResult get_number_from_string(char *string, int *number) {
+    FuncResult func_result;
+    char error_message[MAX_LINE_LENGTH];
     int i = 0;
     char temp_num[MAX_LINE_LENGTH];
+    error_message[0] = '\0';
     temp_num[0] = '\0';
     if (string[i] == '-') {
         temp_num[0] = '-';
@@ -81,22 +83,27 @@ int get_number_from_string(char *string, int *number) {
         /* check if the number found */
 
         if (!is_valid_number(temp_num)) {
-            printf("Error: invalid number\n");
-            return -1;
+            strcpy(func_result.message, "Error: invalid number\n");
+            func_result.result = 0;
+            return func_result;
         }
 
         *number = atoi(temp_num);
-        printf("number found: %d\n", *number);
-        return 1;
+        func_result.result = 1;
+        return func_result;
     }
 
-    return 0;
+    func_result.result = 0;
+    return func_result;
 }
 
 
-int is_valid_label(const char *label) {
+FuncResult is_valid_label(const char *label) {
+    FuncResult func_result;
+    char error_message[MAX_LINE_LENGTH];
     int i;
     size_t len = strlen(label);
+    error_message[0] = '\0';
     /* if last char is empty space ot "\0" remove it */
     if (label[len - 1] == 13) {
         len--;
@@ -104,26 +111,30 @@ int is_valid_label(const char *label) {
 
     /* Check the length of the label (must be at most 31 characters) */
     if (len == 0 || len > 31) {
-        printf("Error: invalid label- label must be at most 31 characters\n");
-        return 0; /* false */
+        strcpy(func_result.message, "Error: invalid label- label must be at most 31 characters\n");
+        func_result.result = 0;
+        return func_result;
     }
 
     /* Check if the label starts with an alphabetic character */
     if (!isalpha(label[0])) {
-        printf("Error: invalid label- label must start with an alphabetic character\n");
-        return 0; /* false */
+        strcpy(func_result.message, "Error: invalid label- label must start with an alphabetic character\n");
+        func_result.result = 0;
+        return func_result;
     }
 
     /* Check if the remaining characters are valid label characters */
     for (i = 1; i < len; ++i) {
         /* Check if the character is an alphanumeric character */
         if (!isalnum(label[i])) {
-            printf("Error: invalid label- label must contain only alphanumeric characters\n");
-            return 0; /* false */
+            strcpy(func_result.message, "Error: invalid label- label must contain only alphanumeric characters\n");
+            func_result.result = 0;
+            return func_result;
         }
     }
 
-    return 1; /* true */
+    func_result.result = 1;
+    return func_result;
 }
 
 
@@ -131,7 +142,7 @@ int is_valid_label(const char *label) {
  * @brief gets a string and returns the label in it
  * @param string
  * @param label
- * @return
+ * @return int
  */
 int get_label_from_string(const char *string, char *label) {
     int i = 0;
@@ -143,7 +154,20 @@ int get_label_from_string(const char *string, char *label) {
         i++;
     }
     label[i] = '\0';
-    printf("label found: %s\n", label);
     remove_white_spaces(label, 0);
-    return is_valid_label(label);
+    return 1;
+    /*is_valid_label(label);*/
+}
+
+
+void logger_error(const char *message, int line_number) {
+    printf("Error: %s in line %d\n", message, line_number);
+}
+
+void logger_warning(const char *message, int line_number) {
+    printf("Warning: %s in line %d\n", message, line_number);
+}
+
+int is_line_80_chars_long(const char *line) {
+    return strlen(line) <= 80;
 }

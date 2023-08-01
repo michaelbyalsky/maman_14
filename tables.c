@@ -118,7 +118,7 @@ void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are) {
     CodeWord *newNode = createCodeWordNode(DATA_NUMBER_WORD);
     if (newNode != NULL) {
         newNode->are = are;
-        newNode->CodeWordUnion.data.dataUnion.value = value;
+        newNode->CodeWordUnion.data.value = value;
 
         if (*head == NULL) {
             *head = newNode;
@@ -136,11 +136,11 @@ void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are) {
     CodeWord *newNode = createCodeWordNode(DATA_LABEL_WORD);
     if (newNode != NULL) {
         newNode->are = are;
-        newNode->CodeWordUnion.data.dataUnion.label = malloc(strlen(label) + 1);
-        if (newNode->CodeWordUnion.data.dataUnion.label == NULL) {
+        newNode->CodeWordUnion.data.label = malloc(strlen(label) + 1);
+        if (newNode->CodeWordUnion.data.label == NULL) {
             printf("Memory allocation failed.");
         }
-        strcpy(newNode->CodeWordUnion.data.dataUnion.label, label);
+        strcpy(newNode->CodeWordUnion.data.label, label);
 
         if (*head == NULL) {
             *head = newNode;
@@ -166,9 +166,9 @@ void printCodeWordList(CodeWord **head) {
             printf("Register - ARE: %u, source: %u, dest: %u\n",
                    current->are, current->CodeWordUnion.registerWord.source, current->CodeWordUnion.registerWord.dest);
         } else if (current->codeWordType == DATA_LABEL_WORD) {
-            printf("Data - ARE: %d, Label: %s\n", current->are, current->CodeWordUnion.data.dataUnion.label);
+            printf("Data - ARE: %d, Label: %s\n", current->are, current->CodeWordUnion.data.label);
         } else {
-            printf("Data - ARE: %d, Value: %d\n", current->are, current->CodeWordUnion.data.dataUnion.value);
+            printf("Data - ARE: %d, Value: %d\n", current->are, current->CodeWordUnion.data.value);
         }
         current = current->next;
         number++;

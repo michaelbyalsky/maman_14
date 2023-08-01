@@ -141,7 +141,8 @@ int is_instruction(char *line) {
 }
 
 
-int get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand) {
+FuncResult get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand) {
+    FuncResult func_result;
     int i;
     int *addressingMethods;
     int numberOfAddressingMethods;
@@ -155,24 +156,33 @@ int get_operand_from_string(char *string, Instruction instruction, Operand *oper
 
     for (i = 0; i < numberOfAddressingMethods; ++i) {
         if (addressingMethods[i] == NOT_EXISTS) {
-            return NOT_EXISTS;
+            func_result.result = NOT_EXISTS;
+            return func_result;
         }
 
         if (addressingMethods[i] == IMMEDIATE) {
             int number_operand;
-            if (get_number_from_string(string, &number_operand)) {
+            FuncResult result = get_number_from_string(string, &number_operand);
+            if (result.result) {
                 operand->NameLabelUnion.number = number_operand;
                 operand->operandType = NUMBER_O;
-                return IMMEDIATE;
+                func_result.result = IMMEDIATE;
+                return func_result;
             }
         }
 
         if (addressingMethods[i] == DIRECT) {
             char label_operand[MAX_LINE_LENGTH];
             if (get_label_from_string(string, label_operand)) {
+                FuncResult is_valid_label_result;
                 remove_white_spaces(label_operand, 0);
+                is_valid_label_result = is_valid_label(label_operand);
+                if(!is_valid_label_result.result) {
+                    return is_valid_label_result;
+                }
                 strcpy(operand->NameLabelUnion.label, label_operand);
-                return DIRECT;
+                func_result.result = DIRECT;
+                return func_result;
             }
         }
 
@@ -181,10 +191,16 @@ int get_operand_from_string(char *string, Instruction instruction, Operand *oper
             if (register_operand.registerNumber != -1) {
                 operand->NameLabelUnion.register_operand = register_operand;
                 operand->operandType = REGISTER_O;
-                return REGISTER_DIRECT;
+                func_result.result = REGISTER_DIRECT;
+                return func_result;
+            } else {
+                func_result.result = NOT_EXISTS;
+                strcpy(func_result.message, "Invalid register");
+                return func_result;
             }
         }
     }
 
-    return NOT_EXISTS;
+    func_result.result = NOT_EXISTS;
+    return func_result;
 }

@@ -13,24 +13,24 @@ int is_label;
 
 int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead);
 
-int find_label(char *line, char *label, int *line_index);
+int find_label(char *line, char *label, unsigned long *line_index);
 
 int
-handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead, char *label);
+handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead, char *label);
 
-int is_directive(const char *line, const int *line_index);
+int is_directive(const char *line, const unsigned long *line_index);
 
 int
-handle_string_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+handle_string_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
                         char *label);
 
-int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+int handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
                           char *label);
 
-int handle_entry_or_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
+int handle_entry_or_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img,
                                      Label **labelHead, char *label);
 
-int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
+int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                        char *label);
 
 int first_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead) {
@@ -47,19 +47,31 @@ int first_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **la
         process_line(line, ic, dc, data_img, labelHead, codeHead);
         line_number++;
     }
-
+    return 1;
 }
 
 int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead) {
     /*line index*/
-    int i = 0;
-    char label[MAX_LABEL_SIZE];
+    unsigned long int i = 0;
+    char label[MAX_LINE_LENGTH];
+    if (!is_line_80_chars_long(line)) {
+        logger_error("line is more than 80 chars", line_number);
+        return 0;
+    }
 
     SKIP_WHITE_SPACES(line, i);
 
     label[0] = '\0';
     /* check if line contains a label */
     is_label = find_label(line, label, &i);
+    if (is_label) {
+        /* check if the label is valid */
+        FuncResult label_valid = is_valid_label(label);
+        if (!label_valid.result) {
+            logger_error(label_valid.message, line_number);
+            return 0;
+        }
+    }
 
 
     SKIP_WHITE_SPACES(line, i);
@@ -77,9 +89,11 @@ int process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **lab
     if (is_empty_line(line)) {
         return 0;
     }
+
+    return 1;
 }
 
-int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
+int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                        char *label) {
     int num_of_operands = 0;
     enum AddressMethod operand_1_address_method;
@@ -90,23 +104,19 @@ int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **
     char *token;
     Operand operand_1;
     Operand operand_2;
+    int l = 0;
 
     Instruction instruction = findInstructionByName(&line[*line_index]);
     if (instruction.opcode == -1) {
-        printf("Error: instruction not found\n");
-        return -1;
+        logger_error("instruction not found", line_number);
+        return 0;
     }
     SKIP_WHITE_SPACES(line, *line_index);
-    /* move the line_index 4 characters forward to skip the instruction name */
     *line_index += strlen(instruction.name);
     operand_1_string[0] = '\0';
     operand_2_string[0] = '\0';
     line_copy[0] = '\0';
-    /* check if the instruction has operands */
-    /* iterate other instruction allowedSourceAddressingMethods */
-    /* create line copy from the line_index */
     strcpy(line_copy, &line[*line_index]);
-    /* put \0 at the end of the line */
     line_copy[strlen(line_copy)] = '\0';
     remove_white_spaces(line_copy, 0);
     /* get the operands string */
@@ -124,86 +134,108 @@ int handle_instruction(char *line, int *line_index, long *ic, long *dc, Label **
     }
 
     if (num_of_operands != instruction.numberOfOperands) {
-        printf("Error: instruction %s must have %d operands\n", instruction.name, instruction.numberOfOperands);
+        printf("Error: instruction %s must have %d operands in Line: %d\n", instruction.name, instruction.numberOfOperands, line_number);
         return -1;
     }
 
     if (instruction.numberOfOperands == 1) {
-        operand_1_address_method = get_operand_from_string(operand_1_string, instruction, &operand_1, 0);
+        FuncResult result = get_operand_from_string(operand_1_string, instruction, &operand_1, 0);
+        if (!result.result) {
+            logger_error(result.message, line_number);
+        }
+        operand_1_address_method = result.result;
     } else if (instruction.numberOfOperands == 2) {
-        operand_1_address_method = get_operand_from_string(operand_1_string, instruction, &operand_1, 1);
+        FuncResult result = get_operand_from_string(operand_1_string, instruction, &operand_1, 1);
+        if (!result.result) {
+            logger_error(result.message, line_number);
+        }
+        operand_1_address_method = result.result;
     }
 
     if (num_of_operands == 2) {
-        operand_2_address_method = get_operand_from_string(operand_2_string, instruction, &operand_2, 0);
+        FuncResult result = get_operand_from_string(operand_2_string, instruction, &operand_2, 0);
+        if (!result.result) {
+            logger_error(result.message, line_number);
+        }
+        operand_2_address_method = result.result;
     }
 
     if (is_label) {
         insertLabelNode(labelHead, label, *ic, CODE_LABEL);
     }
 
-    printf("number of operands: %d\n", num_of_operands);
-
 
     if (num_of_operands == 0) {
         insertInstructionCodeWord(codeHead, 0, instruction.opcode, 0);
+        l += 1;
     } else if (num_of_operands == 1) {
-        printf("operand_1_address_method: %d\n", operand_1_address_method);
         if (operand_1_address_method == REGISTER_DIRECT) {
             insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method);
             insertRegisterCodeWord(codeHead, 0, operand_1.NameLabelUnion.register_operand.registerNumber);
+            l += 2;
         } else if (operand_1_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method);
             insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
+            l += 2;
         } else if (operand_1_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method);
             insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
+            l += 2;
         }
     } else {
         if (operand_1_address_method == REGISTER_DIRECT && operand_2_address_method == REGISTER_DIRECT) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber,
                                    operand_2.NameLabelUnion.register_operand.registerNumber);
+            l += 2;
         } else if (operand_1_address_method == REGISTER_DIRECT && operand_2_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0);
             insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO);
+            l += 3;
         } else if (operand_1_address_method == REGISTER_DIRECT && operand_2_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0);
             insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO);
+            l += 3;
         } else if (operand_1_address_method == DIRECT && operand_2_address_method == REGISTER_DIRECT) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertRegisterCodeWord(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber);
             insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
+            l += 3;
         } else if (operand_1_address_method == DIRECT && operand_2_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
             insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO);
+            l += 3;
         } else if (operand_1_address_method == DIRECT && operand_2_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
             insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO);
+            l += 3;
         } else if (operand_1_address_method == IMMEDIATE && operand_2_address_method == REGISTER_DIRECT) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertRegisterCodeWord(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber);
             insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
+            l += 3;
         } else if (operand_1_address_method == IMMEDIATE && operand_2_address_method == DIRECT) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
             insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO);
+            l += 3;
         } else if (operand_1_address_method == IMMEDIATE && operand_2_address_method == IMMEDIATE) {
             insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method);
             insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
             insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO);
+            l += 3;
         }
 
     }
-    (*ic)++;
+    (*ic) += l;
     return 1;
 }
 
-int find_label(char *line, char *label, int *line_index) {
+int find_label(char *line, char *label, unsigned long *line_index) {
     /* check if there is a : in the line */
     char *colon = strchr(line, ':');
     if (colon == NULL) {
@@ -216,15 +248,11 @@ int find_label(char *line, char *label, int *line_index) {
     remove_white_spaces(label, 0);
     *line_index += strlen(label) + 1;
 
-    /* check if the label is valid */
-    if (is_valid_label(label)) {
-        return 1;
-    }
-    return 0;
+    return 1;
 }
 
 
-int is_directive(const char *line, const int *line_index) {
+int is_directive(const char *line, const unsigned long *line_index) {
     if (line[*line_index] == '.') {
         return 1;
     }
@@ -232,12 +260,12 @@ int is_directive(const char *line, const int *line_index) {
 }
 
 int
-handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead, char *label) {
+handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead, char *label) {
     /* extract directive name */
     int directive = find_directive_by_name(&line[*line_index]);
     if (directive == DIRECTIVE_NOT_FOUND) {
-        printf("Error: directive not found\n");
-        return -1;
+        logger_error("Error: directive not found", line_number);
+        return 0;
     }
 
     if (directive == DATA) {
@@ -256,7 +284,7 @@ handle_directive(char *line, int *line_index, long *ic, long *dc, DataWord *data
 }
 
 int
-handle_string_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+handle_string_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
                         char *label) {
     int temp_index;
     /* move the line_index 6 characters forward to skip the "string" */
@@ -264,8 +292,8 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
     SKIP_WHITE_SPACES(line, *line_index);
     /* check if the next character is a double quote */
     if (line[*line_index] != '"') {
-        printf("Error: string directive must be followed by a string\n");
-        return -1;
+        logger_error("Error: string directive must be followed by a string", line_number);
+        return 0;
     }
     (*line_index)++;
     temp_index = *line_index;
@@ -273,8 +301,8 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
     /* check there is closing double quote */
     while (line[temp_index] != '"') {
         if (line[temp_index] == '\0') {
-            printf("Error: string directive must be followed by a string\n");
-            return -1;
+            logger_error("Error: string directive must be followed by a string", line_number);
+            return 0;
         }
         temp_index++;
     }
@@ -292,7 +320,7 @@ handle_string_directive(const char *line, int *line_index, long *ic, long *dc, D
     (*line_index)++;
 }
 
-int handle_entry_or_extern_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img,
+int handle_entry_or_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img,
                                      Label **labelHead, char *label) {
     char extern_label[MAX_LABEL_SIZE];
     extern_label[0] = '\0';
@@ -301,7 +329,7 @@ int handle_entry_or_extern_directive(const char *line, int *line_index, long *ic
     insertLabelNode(labelHead, extern_label, 0, EXTERN_LABEL);
 }
 
-int handle_data_directive(const char *line, int *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+int handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
                           char *label) {
     /* move the line_index 4 characters forward to skip the "data" */
     *line_index += 5;

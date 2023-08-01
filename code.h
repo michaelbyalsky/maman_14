@@ -146,12 +146,11 @@ typedef struct CodeWord {
         } instruction;
 
 
-        struct {
-            union dataUnion {
-                signed int value;
-                char *label;
-            } dataUnion;
+        union dataUnion {
+            signed int value;
+            char *label;
         } data;
+
 
         struct registerWord {
             enum Register source;
@@ -196,9 +195,9 @@ typedef struct {
  * @param instruction
  * @param operand
  * @param isSourceOperand
- * @return int
+ * @return FuncResult
  */
-int get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand);
+FuncResult get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand);
 
 
 #endif
