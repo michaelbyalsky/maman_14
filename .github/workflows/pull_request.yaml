@@ -27,9 +27,13 @@ jobs:
 
       - name: Remove old build
         run: |
-          rm ./main.o
+          rm ./assembler.o
           rm ./assembler
           rm ./pre_assembler.o
+          rm ./code.o
+          rm ./first_run.o
+          rm ./helpers.o
+          rm ./tables.o          
 
       - name: Build project
         run: make 2>&1 | tee build_output.txt
