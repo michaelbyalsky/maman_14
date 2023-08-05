@@ -45,6 +45,7 @@ jobs:
                 echo "Assembler failed"
                 exit 1
             fi
+          cat output.txt
 
       - name: Build and test
         run: |
