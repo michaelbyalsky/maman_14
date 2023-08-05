@@ -52,16 +52,28 @@ void freeLabelList(Label **head) {
     }
 }
 
-Label *findLabelByNameAndType(Label **head, const char *name, enum LabelType type) {
+Label *findLabelByName(Label **head, const char *name) {
     Label *current = *head;
     while (current != NULL) {
-        if (strcmp(current->name, name) == 0 && current->type == type) {
+        if (strcmp(current->name, name) == 0) {
             return current;
         }
         current = current->next;
     }
     return NULL;
 }
+
+int labelExists(Label **head, const char *name) {
+    Label *current = *head;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            return 1;
+        }
+        current = current->next;
+    }
+    return 0;
+}
+
 
 CodeWord *createCodeWordNode(enum codeWordType codeWordType) {
     CodeWord *newNode = (CodeWord *) malloc(sizeof(CodeWord));

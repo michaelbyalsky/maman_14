@@ -80,13 +80,15 @@ void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, con
             /* Iterate over all the macros and replace their occurrences in the line */
             Macro *current = *macrosHead;
             while (current) {
+                char *macroName;
+                char *macroValue;
+                char *macroPosition;
                 if (current == NULL) {
                     break;
                 }
-                char *macroName = current->name;
-                char *macroValue = current->value;
+                macroName = current->name;
+                macroValue = current->value;
 
-                char *macroPosition;
                 /* check if the macro name is in the line */
                 if ((macroPosition = strstr(line, macroName)) != NULL) {
                     unsigned int macroValueLength = strlen(macroValue);

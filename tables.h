@@ -88,4 +88,20 @@ void freeLabelList(Label **head);
  */
 void printLabelList(Label **head);
 
+/**
+ * @brief find label by name
+ * @param head - the head of the list
+ * @param name - the name of the label
+ * @return Label
+ */
+Label *findLabelByName(Label **head, const char *name);
+
+/**
+ * @brief check if label exists
+ * @param head - the head of the list
+ * @param name - the name of the label
+ * @return int
+ */
+int labelExists(Label **head, const char *name);
+
 #endif

@@ -6,8 +6,9 @@
 #include "code.h"
 #include "tables.h"
 
+int is_error = 0;
 
-static int process_file(char *filename);
+static void process_file(char *filename);
 
 int main(int argc, char *argv[]) {
     int i;
@@ -17,7 +18,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-static int process_file(char *filename) {
+static void process_file(char *filename) {
+    int i;
     long ic = IC_START;
     long dc = DC_START;
     DataWord data_img[CODE_IMG_LENGTH];
@@ -27,14 +29,14 @@ static int process_file(char *filename) {
 
     /* pre-assemble the file */
     char *outputFileName = pre_assemble(filename);
+    is_error = 0;
     if (outputFileName == NULL) {
-        return -1;
+        return;
     }
     /* first run */
     first_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
 
     /* print the data image */
-    int i;
     for (i = 0; i < dc; ++i) {
         if (data_img[i].datatype == DATA) {
             printf("%d: %d\n", i, data_img[i].NumberStringUnion.number);
@@ -51,5 +53,4 @@ static int process_file(char *filename) {
 
     printCodeWordList(&codeHead);
     freeCodeWordList(&codeHead);
-
 }

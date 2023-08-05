@@ -195,7 +195,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
                 return func_result;
             } else {
                 func_result.result = NOT_EXISTS;
-                strcpy(func_result.message, "Invalid register");
+                strcpy((char *) func_result.message, "Invalid register");
                 return func_result;
             }
         }

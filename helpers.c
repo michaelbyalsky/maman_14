@@ -111,14 +111,14 @@ FuncResult is_valid_label(const char *label) {
 
     /* Check the length of the label (must be at most 31 characters) */
     if (len == 0 || len > 31) {
-        strcpy(func_result.message, "Error: invalid label- label must be at most 31 characters\n");
+        strcpy((char *) func_result.message, "Error: invalid label- label must be at most 31 characters\n");
         func_result.result = 0;
         return func_result;
     }
 
     /* Check if the label starts with an alphabetic character */
     if (!isalpha(label[0])) {
-        strcpy(func_result.message, "Error: invalid label- label must start with an alphabetic character\n");
+        strcpy((char *) func_result.message, "Error: invalid label- label must start with an alphabetic character\n");
         func_result.result = 0;
         return func_result;
     }
@@ -127,7 +127,7 @@ FuncResult is_valid_label(const char *label) {
     for (i = 1; i < len; ++i) {
         /* Check if the character is an alphanumeric character */
         if (!isalnum(label[i])) {
-            strcpy(func_result.message, "Error: invalid label- label must contain only alphanumeric characters\n");
+            strcpy((char *) func_result.message, "Error: invalid label- label must contain only alphanumeric characters\n");
             func_result.result = 0;
             return func_result;
         }

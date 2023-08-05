@@ -8,7 +8,7 @@
 #define IC_START 0
 #define DC_START 0
 #define CODE_IMG_LENGTH 100
-
+extern int is_error; /* flag for file */
 
 
 typedef struct FuncResult {
