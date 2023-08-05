@@ -38,6 +38,14 @@ jobs:
             echo "No warnings found in build output"
           fi
 
+      - name: Run assembler
+        run: |
+          ./assembler ./test_files/initial.as > output.txt
+            if [ $? -ne 0 ]; then
+                echo "Assembler failed"
+                exit 1
+            fi
+
       - name: Build and test
         run: |
           make -C unit_tests
