@@ -23,13 +23,7 @@ jobs:
       - name: Remove old test build
         run: |
           rm ./unit_tests/test
-          rm ./unit_tests/test.o
-
-      - name: Remove old build
-        run: |
-          rm ./main.o
-          rm ./assembler
-          rm ./pre_assembler.o
+          rm ./unit_tests/test.o      
 
       - name: Build project
         run: make 2>&1 | tee build_output.txt
@@ -43,6 +37,15 @@ jobs:
           else
             echo "No warnings found in build output"
           fi
+
+      - name: Run assembler
+        run: |
+          ./assembler ./test_files/initial.as > output.txt
+            if [ $? -ne 0 ]; then
+                echo "Assembler failed"
+                exit 1
+            fi
+          cat output.txt
 
       - name: Build and test
         run: |

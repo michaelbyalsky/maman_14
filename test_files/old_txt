@@ -1,0 +1,144 @@
+void remove_white_spaces(char *str) {
+    int i = 0;
+    int j = 0;
+    while (str[i] != '\0') {
+        if (str[i] != ' ' && str[i] != '\t') {
+            str[j] = str[i];
+            ++j;
+        }
+        ++i;
+    }
+    str[j] = '\0';
+}
+
+char *go_until_not_white_space(char *str) {
+    while (*str == ' ' || *str == '\t') {
+        str++;
+    }
+
+    return str;
+}
+
+/* find next char is instruction */
+int find_instruction(char *line) {
+    int i;
+    for (i = 0; i < sizeof(instructions) / sizeof(instructions[0]); i++) {
+        /* if the following word is an instruction */
+        int compare_result = strncmp(line, instructions[i].name, strlen(instructions[i].name));
+        if (compare_result == 0) {
+            /* printf("found instruction: %s\n", instructions[i].name); */
+            return i;
+        }
+    }
+    return 0;
+}
+
+void process_line(char *line, int index, int *ic, int *dc) {
+    int label_exists = 0;
+    /* check if ":" in the line */
+    if (strchr(line, ':') != NULL) { /* strchr returns a pointer to the first occurence of ":" in the string, if it is not in the string it returns NULL */
+        label_exists = 1;
+    }
+
+    /* if label exists, the chars until the ":" are the label, assighn them */
+    if (label_exists) {
+        char label[MAX_LINE_LENGTH]; /* TODO: change to max label length */
+        sscanf(line, "%[^:]", label); /* read until ":" the [^:] means read until ":" */
+        remove_white_spaces(label);
+        printf("label: %s\n", label);
+        /* remove the label and the : from the line */
+        line = strchr(line, ':') +
+               1; /* strchr returns a pointer to the first occurence of ":" in the string, if it is not in the string it returns NULL */
+    }
+    /* read the line until no white spaces */
+    line = go_until_not_white_space(line);
+    printf("line: %s\n", line);
+    /* check if next char is "." */
+    if (line[0] == '.') {
+        line++;
+        /* check if next char is directive */
+        Directive *directive;
+        int i;
+        /* print size of directives array */
+        for (i = 0; i < sizeof(directives) / sizeof(directives[0]); i++) {
+            /* if the following word is a directive */
+            int compare_result = strncmp(line, directives[i].name, strlen(directives[i].name));
+            if (compare_result == 0) {
+                printf("found directive: %s\n", directives[i].name);
+                directive = &directives[i];
+                line += strlen(directives[i].name);
+                line = go_until_not_white_space(line);
+                remove_white_spaces(line);
+                /* read the integers divided by "," */
+                /* if data */
+                if (strcmp(directive->name, "data") == 0) {
+                    char *token = strtok(line, ",");
+                    int j = 0;
+                    while (token != NULL) {
+                        int value = atoi(token);
+                        printf("token: %s\n", token);
+                        commands_table[index] = malloc(sizeof(Command));
+                        commands_table[index]->values[j] = value;
+
+                        token = strtok(NULL, ",");
+                    }
+                }
+            }
+        }
+    } else {
+        /* check if next char is operation */
+        find_instruction(line);
+    }
+}
+
+
+void process_file(const char *filename) {
+    int ic = 100; /* instruction counter */
+    int dc = 0; /* data counter */
+    char line[MAX_LINE_LENGTH];
+    long data_img[1000];
+    FILE *file = fopen(filename, "r");
+    int i = 0;
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        process_line(line, i, &ic, &dc);
+        i++;
+
+    }
+}
+
+Instruction instructions[] = {
+        {"mov",  MOV,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {DIRECT,    REGISTER_DIRECT}},
+        {"cmp",  CMP,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {IMMEDIATE, DIRECT, REGISTER_DIRECT}},
+        {"add",  ADD,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {DIRECT,    REGISTER_DIRECT}},
+        {"sub",  SUB,  {IMMEDIATE, DIRECT, REGISTER_DIRECT}, {DIRECT,    REGISTER_DIRECT}},
+        {"not",  NOT,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"clr",  CLR,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"lea",  LEA,  {DIRECT},                             {DIRECT,    REGISTER_DIRECT}},
+        {"inc",  INC,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"dec",  DEC,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"jmp",  JMP,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"bne",  BNE,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"red",  RED,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"prn",  PRN,  {NOT_EXISTS},                         {IMMEDIATE, DIRECT, REGISTER_DIRECT}},
+        {"jsr",  JSR,  {NOT_EXISTS},                         {DIRECT,    REGISTER_DIRECT}},
+        {"rts",  RTS,  {NOT_EXISTS},                         {NOT_EXISTS}},
+        {"stop", STOP, {NOT_EXISTS},                         {NOT_EXISTS}},
+};
+
+Directive directives[] = {
+        {"data",   ONE_ZERO},
+        {"string", ONE_ZERO},
+        {"entry",  ONE_ZERO},
+        {"extern", ZERO_ONE}
+};
+
+Register registers[] = {
+        {"r0", R0},
+        {"r1", R1},
+        {"r2", R2},
+        {"r3", R3},
+        {"r4", R4},
+        {"r5", R5},
+        {"r6", R6},
+        {"r7", R7}
+};
