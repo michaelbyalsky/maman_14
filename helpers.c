@@ -61,10 +61,8 @@ int is_valid_number(const char *str) {
  */
 FuncResult get_number_from_string(char *string, int *number) {
     FuncResult func_result;
-    char error_message[MAX_LINE_LENGTH];
     int i = 0;
     char temp_num[MAX_LINE_LENGTH];
-    error_message[0] = '\0';
     temp_num[0] = '\0';
     if (string[i] == '-') {
         temp_num[0] = '-';
@@ -83,7 +81,7 @@ FuncResult get_number_from_string(char *string, int *number) {
         /* check if the number found */
 
         if (!is_valid_number(temp_num)) {
-            strcpy(func_result.message, "Error: invalid number\n");
+            strcpy((char *) func_result.message, "Error: invalid number\n");
             func_result.result = 0;
             return func_result;
         }
@@ -100,10 +98,8 @@ FuncResult get_number_from_string(char *string, int *number) {
 
 FuncResult is_valid_label(const char *label) {
     FuncResult func_result;
-    char error_message[MAX_LINE_LENGTH];
     int i;
     size_t len = strlen(label);
-    error_message[0] = '\0';
     /* if last char is empty space ot "\0" remove it */
     if (label[len - 1] == 13) {
         len--;
