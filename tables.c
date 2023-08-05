@@ -63,6 +63,18 @@ Label *findLabelByName(Label **head, const char *name) {
     return NULL;
 }
 
+int updateLabelType(Label **head, const char *name, enum LabelType type) {
+    Label *current = *head;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            current->type = type;
+            return 1;
+        }
+        current = current->next;
+    }
+    return 0;
+}
+
 int labelExists(Label **head, const char *name) {
     Label *current = *head;
     while (current != NULL) {
@@ -86,13 +98,16 @@ CodeWord *createCodeWordNode(enum codeWordType codeWordType) {
     return newNode;
 }
 
-void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest) {
+void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords,
+                               int ic) {
     CodeWord *newNode = createCodeWordNode(INSTRUCTION_WORD);
     if (newNode != NULL) {
         newNode->are = ZERO;
         newNode->CodeWordUnion.instruction.dest = dest;
         newNode->CodeWordUnion.instruction.opcode = opcode;
         newNode->CodeWordUnion.instruction.source = source;
+        newNode->CodeWordUnion.instruction.totalWords = totalWords;
+        newNode->CodeWordUnion.instruction.ic = ic;
 
         if (*head == NULL) {
             *head = newNode;
@@ -187,8 +202,19 @@ void printCodeWordList(CodeWord **head) {
     }
 
     printf("number of code words: %d\n", number);
-
 }
+
+CodeWord* findCodeWordByIC(CodeWord **head, int ic) {
+    CodeWord *current = *head;
+    while (current != NULL) {
+        if (current->CodeWordUnion.instruction.ic == ic) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
 
 void freeCodeWordList(CodeWord **head) {
     CodeWord *current = *head;

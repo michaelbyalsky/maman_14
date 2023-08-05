@@ -10,9 +10,11 @@
  * @param source - the source operand
  * @param opcode - the opcode of the instruction
  * @param dest - the destination operand
+ * @param totalWords - the total words of the instruction
+ * @param ic - the ic of the instruction
  * @return
  */
-void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest);
+void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, int ic);
 
 
 /**
@@ -103,5 +105,23 @@ Label *findLabelByName(Label **head, const char *name);
  * @return int
  */
 int labelExists(Label **head, const char *name);
+
+
+/**
+ * @brief update the label type
+ * @param head - the head of the list
+ * @param name - the name of the label
+ * @param type - the type of the label
+ * @return int
+ */
+int updateLabelType(Label **head, const char *name, enum LabelType type);
+
+/**
+ * @brief find code word by ic
+ * @param head
+ * @param ic
+ * @return
+ */
+CodeWord* findCodeWordByIC(CodeWord **head, int ic);
 
 #endif

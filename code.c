@@ -204,3 +204,11 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
     func_result.result = NOT_EXISTS;
     return func_result;
 }
+
+
+int is_directive(const char *line, const unsigned long *line_index) {
+    if (line[*line_index] == '.') {
+        return 1;
+    }
+    return 0;
+}

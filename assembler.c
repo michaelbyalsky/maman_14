@@ -5,6 +5,7 @@
 #include "first_run.h"
 #include "code.h"
 #include "tables.h"
+#include "second_run.h"
 
 int is_error = 0;
 
@@ -45,12 +46,22 @@ static void process_file(char *filename) {
         }
     }
 
-    printf("ic: %ld\n", ic);
+    if (is_error) {
+        printf("Error in file %s\n", filename);
+        return;
+    }
 
-    /* print the label list */
     printLabelList(&labelHead);
+    printCodeWordList(&codeHead);
+
+    printf("\n\n-------------Second run-------------\n\n");
+    ic = IC_START;
+    second_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
+
+    printLabelList(&labelHead);
+    printCodeWordList(&codeHead);
+
     freeLabelList(&labelHead);
 
-    printCodeWordList(&codeHead);
     freeCodeWordList(&codeHead);
 }

@@ -143,6 +143,8 @@ typedef struct CodeWord {
             enum AddressMethod source;
             unsigned int opcode;
             enum AddressMethod dest;
+            int totalWords;
+            int ic;
         } instruction;
 
 
@@ -200,4 +202,11 @@ typedef struct {
 FuncResult get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand);
 
 
+/**
+ * @brief function to determine if a line is a directive
+ * @param line
+ * @param line_index
+ * @return int
+ */
+int is_directive(const char *line, const unsigned long *line_index);
 #endif
