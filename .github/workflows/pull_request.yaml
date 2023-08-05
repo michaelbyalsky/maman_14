@@ -23,17 +23,7 @@ jobs:
       - name: Remove old test build
         run: |
           rm ./unit_tests/test
-          rm ./unit_tests/test.o
-
-      - name: Remove old build
-        run: |
-          rm ./assembler.o
-          rm ./assembler
-          rm ./pre_assembler.o
-          rm ./code.o
-          rm ./first_run.o
-          rm ./helpers.o
-          rm ./tables.o          
+          rm ./unit_tests/test.o      
 
       - name: Build project
         run: make 2>&1 | tee build_output.txt
