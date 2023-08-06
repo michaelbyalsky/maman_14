@@ -3,7 +3,6 @@
 
 #include "globals.h"
 
-#define MAX_MACRO_COUNT 100
 #define MAX_MACRO_NAME_LENGTH 100
 
 typedef struct Macro {

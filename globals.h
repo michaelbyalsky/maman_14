@@ -9,7 +9,7 @@
 #define IC_START 0
 #define DC_START 0
 extern int is_error; /* flag for file */
-extern int line_address; /* address of the current line */
+extern unsigned int line_address; /* address of the current line */
 
 typedef struct FuncResult {
     int result;

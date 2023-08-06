@@ -162,13 +162,14 @@ typedef struct CodeWord {
 
     enum Are are;
     enum codeWordType codeWordType;
+    int address;
     struct CodeWord *next;
 } CodeWord;
 
 
 typedef struct Label {
     char *name;
-    long address;
+    unsigned int address;
     struct Label *next;
     enum LabelType type;
 } Label;
@@ -179,6 +180,7 @@ typedef struct DataWord {
         char string[2];
     } NumberStringUnion;
     enum Directives datatype;
+    unsigned int address;
     struct DataWord *next;
 } DataWord;
 

@@ -105,8 +105,8 @@ int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc
     Operand operand_1;
     Operand operand_2;
     int l = 0;
-
     Instruction instruction = findInstructionByName(&line[*line_index]);
+
     if (instruction.opcode == -1) {
         logger_error("instruction not found", line_number);
         return 0;
@@ -166,73 +166,115 @@ int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc
             is_error = 1;
             return 0;
         }
-        insertLabelNode(labelHead, label, *ic, CODE_LABEL);
+        insertLabelNode(labelHead, label, line_address, CODE_LABEL);
     }
 
 
     if (num_of_operands == 0) {
         l += 1;
-        insertInstructionCodeWord(codeHead, 0, instruction.opcode, 0, l, *ic);
+        insertInstructionCodeWord(codeHead, 0, instruction.opcode, 0, l, *ic, line_address);
+        line_address++;
     } else if (num_of_operands == 1) {
         if (operand_1_address_method == REGISTER_DIRECT) {
             l += 2;
-            insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method, l, *ic);
-            insertRegisterCodeWord(codeHead, 0, operand_1.NameLabelUnion.register_operand.registerNumber);
+            insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method, l, *ic, line_address);
+            line_address++;
+            insertRegisterCodeWord(codeHead, 0, operand_1.NameLabelUnion.register_operand.registerNumber, line_address);
+            line_address++;
         } else if (operand_1_address_method == DIRECT) {
             l += 2;
-            insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method, l, *ic);
-            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
+            insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method, l, *ic, line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == IMMEDIATE) {
             l += 2;
-            insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method, l, *ic);
-            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
+            insertInstructionCodeWord(codeHead, 0, instruction.opcode, operand_1_address_method, l, *ic, line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
         }
     } else {
         if (operand_1_address_method == REGISTER_DIRECT && operand_2_address_method == REGISTER_DIRECT) {
             l += 2;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
             insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber,
-                                   operand_2.NameLabelUnion.register_operand.registerNumber);
+                                   operand_2.NameLabelUnion.register_operand.registerNumber, line_address);
+            line_address++;
         } else if (operand_1_address_method == REGISTER_DIRECT && operand_2_address_method == DIRECT) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0);
-            insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0, line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == REGISTER_DIRECT && operand_2_address_method == IMMEDIATE) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0);
-            insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertRegisterCodeWord(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0, line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == DIRECT && operand_2_address_method == REGISTER_DIRECT) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertRegisterCodeWord(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber);
-            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertRegisterCodeWord(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber, line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == DIRECT && operand_2_address_method == DIRECT) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
-            insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == DIRECT && operand_2_address_method == IMMEDIATE) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO);
-            insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == IMMEDIATE && operand_2_address_method == REGISTER_DIRECT) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertRegisterCodeWord(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber);
-            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertRegisterCodeWord(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber, line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == IMMEDIATE && operand_2_address_method == DIRECT) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
-            insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+            insertDataLabelCodeWord(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
         } else if (operand_1_address_method == IMMEDIATE && operand_2_address_method == IMMEDIATE) {
             l += 3;
-            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic);
-            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO);
-            insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO);
+            insertInstructionCodeWord(codeHead, operand_1_address_method, instruction.opcode, operand_2_address_method, l, *ic,
+                                      line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+            insertDataNumberCodeWord(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
         }
     }
     (*ic) += l;
@@ -339,10 +381,13 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
         temp_string[1] = '\0';
         if (line[*line_index] == '"') {
             temp_string[0] = '\0';
-            insertStringDataWord(dataImgHead, temp_string);
+            insertStringDataWord(dataImgHead, temp_string, line_address);
+            (*dc)++;
+            line_address++;
+            (*line_index)++;
             break;
         } else {
-            insertStringDataWord(dataImgHead, temp_string);
+            insertStringDataWord(dataImgHead, temp_string, line_address);
         }
         (*dc)++;
         line_address++;
@@ -399,7 +444,7 @@ void handle_data_directive(const char *line, unsigned long *line_index, long *ic
                 temp_index++;
             }
             converted = strtol(temp_num, &endPrt, 10);
-            insertNumberDataWord(dataImgHead, converted);
+            insertNumberDataWord(dataImgHead, converted, line_address);
             line_address++;
             (*dc)++;
             continue;

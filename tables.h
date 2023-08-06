@@ -14,7 +14,7 @@
  * @param ic - the ic of the instruction
  * @return
  */
-void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, int ic);
+void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, int ic, int unsigned address);
 
 
 /**
@@ -24,7 +24,7 @@ void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsig
  * @param are - the are of the label
  * @return
  */
-void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are);
+void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are, int unsigned address);
 
 /**
  * @brief Inserts a register code word to the end of the list
@@ -34,7 +34,7 @@ void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are);
  * @return
  */
 void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
-                            enum Register dest_register);
+                            enum Register , int unsigned address);
 
 /**
  * @brief Inserts a data number code word to the end of the list
@@ -43,7 +43,7 @@ void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
  * @param are - the are of the value
  * @return
  */
-void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are);
+void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are, int unsigned address);
 
 /**
  * @brief Creates a new code word node
@@ -74,7 +74,7 @@ Label *createLabelNode(const char *name, long address, enum LabelType type);
  * @param type - the type of the label
  * @return
  */
-void insertLabelNode(Label **head, const char *name, long address, enum LabelType type);
+void insertLabelNode(Label **head, const char *name, unsigned int address, enum LabelType type);
 
 /**
  * @brief free the label list
@@ -137,14 +137,14 @@ DataWord *createDataWordNode(enum Directives dataType);
  * @param head
  * @param number
  */
-void insertNumberDataWord(DataWord **head, int number);
+void insertNumberDataWord(DataWord **head, int number, int unsigned address);
 
 /**
  * @brief Inserts a data string code word to the end of the list
  * @param head
  * @param string
  */
-void insertStringDataWord(DataWord **head, char *string);
+void insertStringDataWord(DataWord **head, char *string, int unsigned address);
 
 /**
  * @brief print the data word list

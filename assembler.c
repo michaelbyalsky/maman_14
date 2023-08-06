@@ -8,7 +8,7 @@
 #include "second_run.h"
 
 int is_error = 0;
-int line_address = INITIAL_ADDRESS;
+unsigned int line_address = INITIAL_ADDRESS;
 
 static void process_file(char *filename);
 

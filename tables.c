@@ -15,10 +15,11 @@ DataWord *createDataWordNode(enum Directives dataType) {
     return newNode;
 }
 
-void insertNumberDataWord(DataWord **head, int number) {
+void insertNumberDataWord(DataWord **head, int number, int unsigned address) {
     DataWord *newNode = createDataWordNode(DATA);
     if (newNode != NULL) {
         newNode->NumberStringUnion.number = number;
+        newNode->address = address;
 
         if (*head == NULL) {
             *head = newNode;
@@ -32,10 +33,11 @@ void insertNumberDataWord(DataWord **head, int number) {
     }
 }
 
-void insertStringDataWord(DataWord **head, char *string) {
+void insertStringDataWord(DataWord **head, char *string, int unsigned address) {
     DataWord *newNode = createDataWordNode(STRING);
     if (newNode != NULL) {
         strcpy(newNode->NumberStringUnion.string, string);
+        newNode->address = address;
 
         if (*head == NULL) {
             *head = newNode;
@@ -54,9 +56,9 @@ void printDataWordList(DataWord **head) {
     DataWord *current = *head;
     while (current != NULL) {
         if (current->datatype == DATA) {
-            printf("Data - Value: %d\n", current->NumberStringUnion.number);
+            printf("Data - Value: %d, address: %u\n", current->NumberStringUnion.number, current->address);
         } else {
-            printf("Data - String: %s\n", current->NumberStringUnion.string);
+            printf("Data - String: %s, address: %u\n", current->NumberStringUnion.string, current->address);
         }
         current = current->next;
         counter++;
@@ -91,7 +93,7 @@ Label *createLabelNode(const char *name, long address, enum LabelType type) {
     return newNode;
 }
 
-void insertLabelNode(Label **head, const char *name, long address, enum LabelType type) {
+void insertLabelNode(Label **head, const char *name, unsigned int address, enum LabelType type) {
     Label *newNode = createLabelNode(name, address, type);
     if (*head == NULL) {
         *head = newNode;
@@ -157,20 +159,21 @@ int labelExists(Label **head, const char *name) {
 }
 
 
-CodeWord *createCodeWordNode(enum codeWordType codeWordType) {
+CodeWord *createCodeWordNode(enum codeWordType codeWordType, int unsigned address) {
     CodeWord *newNode = (CodeWord *) malloc(sizeof(CodeWord));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
     }
     newNode->codeWordType = codeWordType;
     newNode->next = NULL;
+    newNode->address = address;
 
     return newNode;
 }
 
 void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords,
-                               int ic) {
-    CodeWord *newNode = createCodeWordNode(INSTRUCTION_WORD);
+                               int ic, int unsigned address) {
+    CodeWord *newNode = createCodeWordNode(INSTRUCTION_WORD, address);
     if (newNode != NULL) {
         newNode->are = ZERO;
         newNode->CodeWordUnion.instruction.dest = dest;
@@ -192,8 +195,8 @@ void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsig
 }
 
 void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
-                            enum Register dest_register) {
-    CodeWord *newNode = createCodeWordNode(REGISTER_WORD);
+                            enum Register dest_register, int unsigned address) {
+    CodeWord *newNode = createCodeWordNode(REGISTER_WORD, address);
     if (newNode != NULL) {
         newNode->are = ZERO;
         newNode->CodeWordUnion.registerWord.source = source_register;
@@ -211,8 +214,8 @@ void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
     }
 }
 
-void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are) {
-    CodeWord *newNode = createCodeWordNode(DATA_NUMBER_WORD);
+void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are, int unsigned address) {
+    CodeWord *newNode = createCodeWordNode(DATA_NUMBER_WORD, address);
     if (newNode != NULL) {
         newNode->are = are;
         newNode->CodeWordUnion.data.value = value;
@@ -229,8 +232,8 @@ void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are) {
     }
 }
 
-void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are) {
-    CodeWord *newNode = createCodeWordNode(DATA_LABEL_WORD);
+void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are, int unsigned address) {
+    CodeWord *newNode = createCodeWordNode(DATA_LABEL_WORD, address);
     if (newNode != NULL) {
         newNode->are = are;
         newNode->CodeWordUnion.data.label = malloc(strlen(label) + 1);
@@ -256,16 +259,18 @@ void printCodeWordList(CodeWord **head) {
     CodeWord *current = *head;
     while (current != NULL) {
         if (current->codeWordType == INSTRUCTION_WORD) {
-            printf("Instruction - ARE: %u, source: %u, opcode: %u, dest: %u\n",
+            printf("Instruction - ARE: %u, source: %u, opcode: %u, dest: %u, address: %u\n",
                    current->are, current->CodeWordUnion.instruction.source, current->CodeWordUnion.instruction.opcode,
-                   current->CodeWordUnion.instruction.dest);
+                   current->CodeWordUnion.instruction.dest, current->address);
         } else if (current->codeWordType == REGISTER_WORD) {
-            printf("Register - ARE: %u, source: %u, dest: %u\n",
-                   current->are, current->CodeWordUnion.registerWord.source, current->CodeWordUnion.registerWord.dest);
+            printf("Register - ARE: %u, source: %u, dest: %u, address: %u\n",
+                   current->are, current->CodeWordUnion.registerWord.source, current->CodeWordUnion.registerWord.dest, current->address);
         } else if (current->codeWordType == DATA_LABEL_WORD) {
-            printf("Data - ARE: %d, Label: %s\n", current->are, current->CodeWordUnion.data.label);
+            printf("Data - ARE: %d, Label: %s, address: %u\n",
+                   current->are, current->CodeWordUnion.data.label, current->address);
         } else {
-            printf("Data - ARE: %d, Value: %d\n", current->are, current->CodeWordUnion.data.value);
+            printf("Data - ARE: %d, Value: %d, address: %u\n",
+                   current->are, current->CodeWordUnion.data.value, current->address);
         }
         current = current->next;
         number++;
