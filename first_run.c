@@ -23,10 +23,13 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
                         char *label);
 
 void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
-                          char *label);
+                           char *label);
 
 void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
-                                     Label **labelHead, char *label);
+                             Label **labelHead, char *label);
+
+void handle_entry_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
+                            Label **labelHead, char *label);
 
 int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                        char *label);
@@ -158,7 +161,7 @@ int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc
     }
 
     if (is_label) {
-        if(labelExists(labelHead, label)) {
+        if (labelExists(labelHead, label)) {
             logger_error("label already exists", line_number);
             is_error = 1;
             return 0;
@@ -258,7 +261,7 @@ handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, Data
     /* extract directive name */
     int directive = find_directive_by_name(&line[*line_index]);
     if (directive == DIRECTIVE_NOT_FOUND) {
-        logger_error("Error: directive not found", line_number);
+        logger_error("directive not found", line_number);
         return 0;
     }
 
@@ -269,18 +272,32 @@ handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, Data
         handle_string_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         return 1;
     } else if (directive == ENTRY) {
-        /* check if label and if so log warning */
+        handle_entry_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         if (is_label) {
             logger_warning("Warning: entry directive entry cannot be followed by a label", line_number);
         }
         return 1;
     } else if (directive == EXTERN) {
         /* move the line_index 6 characters forward to skip the "extern" */
-        *line_index += 6;
         handle_extern_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         return 1;
     }
     return 0;
+}
+
+void handle_entry_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
+                            Label **labelHead, char *label) {
+    /**line_index+=strlen("entry");
+    char entry_label[MAX_LABEL_SIZE];
+    entry_label[0] = '\0';
+    SKIP_WHITE_SPACES(line, *line_index);
+    get_label_from_string(&line[*line_index], entry_label);
+    if (labelExists(labelHead, label)) {
+        logger_error("label already exists", line_number);
+        is_error = 1;
+        return;
+    }
+    insertLabelNode(labelHead, entry_label, -1, ENTRY_LABEL);*/
 }
 
 int
@@ -292,7 +309,7 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
     SKIP_WHITE_SPACES(line, *line_index);
     /* check if the next character is a double quote */
     if (line[*line_index] != '"') {
-        logger_error("Error: string directive must be followed by a string", line_number);
+        logger_error("string directive must be followed by a string", line_number);
         return 0;
     }
     (*line_index)++;
@@ -301,27 +318,34 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
     /* check there is closing double quote */
     while (line[temp_index] != '"') {
         if (line[temp_index] == '\0') {
-            logger_error("Error: string directive must be followed by a string", line_number);
+            logger_error("string directive must be followed by a string", line_number);
             return 0;
         }
         temp_index++;
     }
     if (is_label) {
         if (labelExists(labelHead, label)) {
-            logger_error("Error: label already exists", line_number);
+            logger_error("label already exists", line_number);
             is_error = 1;
             return 0;
         }
-        insertLabelNode(labelHead, label, *dc, DATA_LABEL);
+        insertLabelNode(labelHead, label, line_address, DATA_LABEL);
     }
 
     /* go until the next double quote and add each character to the data image */
-    while (line[*line_index] != '"') {
+    while (1) {
         char temp_string[2] = {'\0'};
         temp_string[0] = line[*line_index];
         temp_string[1] = '\0';
-        insertStringDataWord(dataImgHead, temp_string);
+        if (line[*line_index] == '"') {
+            temp_string[0] = '\0';
+            insertStringDataWord(dataImgHead, temp_string);
+            break;
+        } else {
+            insertStringDataWord(dataImgHead, temp_string);
+        }
         (*dc)++;
+        line_address++;
         (*line_index)++;
     }
     (*line_index)++;
@@ -329,27 +353,27 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
 }
 
 void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
-                                     Label **labelHead, char *label) {
+                             Label **labelHead, char *label) {
+    *line_index += strlen("extern");
     char extern_label[MAX_LABEL_SIZE];
     extern_label[0] = '\0';
     SKIP_WHITE_SPACES(line, *line_index);
     get_label_from_string(&line[*line_index], extern_label);
-    if (is_label) {
-        if(labelExists(labelHead, label)) {
-            logger_error("Error: label already exists", line_number);
-            is_error = 1;
-            return;
-        }
-        insertLabelNode(labelHead, extern_label, -1, EXTERN_LABEL);
+    if (labelExists(labelHead, label)) {
+        logger_error("label already exists", line_number);
+        is_error = 1;
+        return;
     }
+    insertLabelNode(labelHead, extern_label, -1, EXTERN_LABEL);
 }
 
 void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
-                          char *label) {
+                           char *label) {
     char line_copy[MAX_LINE_LENGTH];
     /* move the line_index 5 characters forward to skip the "data" */
     int start_dc = *dc;
     int temp_index = 0;
+    int start_address = line_address;
     *line_index += 5;
     line_copy[0] = '\0';
     strcpy(line_copy, &line[*line_index]);
@@ -376,6 +400,7 @@ void handle_data_directive(const char *line, unsigned long *line_index, long *ic
             }
             converted = strtol(temp_num, &endPrt, 10);
             insertNumberDataWord(dataImgHead, converted);
+            line_address++;
             (*dc)++;
             continue;
         }
@@ -384,11 +409,11 @@ void handle_data_directive(const char *line, unsigned long *line_index, long *ic
 
     if (*dc - start_dc != 0) {
         if (is_label) {
-            if(labelExists(labelHead, label)) {
+            if (labelExists(labelHead, label)) {
                 logger_error("label already exists", line_number);
                 is_error = 1;
             }
-            insertLabelNode(labelHead, label, start_dc, DATA_LABEL);
+            insertLabelNode(labelHead, label, start_address, DATA_LABEL);
         }
     } else {
         is_error = 1;

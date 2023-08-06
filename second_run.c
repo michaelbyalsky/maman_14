@@ -50,7 +50,7 @@ void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgH
                 is_error = 1;
                 logger_error((const char *) is_valid_label_result.message, line_number_2);
             }
-            /* test it*/
+            /* test it */
             if (!updateLabelType(labelHead, label, (enum LabelType) ENTRY)) {
                 is_error = 1;
                 logger_error("update label operation failed", line_number_2);

@@ -8,6 +8,7 @@
 #include "second_run.h"
 
 int is_error = 0;
+int line_address = INITIAL_ADDRESS;
 
 static void process_file(char *filename);
 
@@ -43,6 +44,7 @@ static void process_file(char *filename) {
 
     printLabelList(&labelHead);
     printCodeWordList(&codeHead);
+    printDataWordList(&dataImgHead);
 
     printf("\n\n-------------Second run-------------\n\n");
     ic = IC_START;
@@ -50,8 +52,9 @@ static void process_file(char *filename) {
 
     printLabelList(&labelHead);
     printCodeWordList(&codeHead);
+    printDataWordList(&dataImgHead);
 
     freeLabelList(&labelHead);
-
     freeCodeWordList(&codeHead);
+    freeDataWordList(&dataImgHead);
 }

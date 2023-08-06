@@ -50,6 +50,7 @@ void insertStringDataWord(DataWord **head, char *string) {
 }
 
 void printDataWordList(DataWord **head) {
+    int counter = 0;
     DataWord *current = *head;
     while (current != NULL) {
         if (current->datatype == DATA) {
@@ -58,7 +59,9 @@ void printDataWordList(DataWord **head) {
             printf("Data - String: %s\n", current->NumberStringUnion.string);
         }
         current = current->next;
+        counter++;
     }
+    printf("number of data words: %d\n", counter);
 }
 
 void freeDataWordList(DataWord **head) {
