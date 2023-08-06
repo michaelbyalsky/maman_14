@@ -4,11 +4,11 @@
 
 int line_number_2;
 
-void process_line_second_run(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead);
+void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead);
 
 void skip_label(char *line, unsigned long *line_index);
 
-int second_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead) {
+int second_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead) {
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -18,13 +18,13 @@ int second_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **l
 
     line_number_2 = 1;
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-        process_line_second_run(line, ic, dc, data_img, labelHead, codeHead);
+        process_line_second_run(line, ic, dc, dataImgHead, labelHead, codeHead);
         line_number_2++;
     }
     return 1;
 }
 
-void process_line_second_run(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead) {
+void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead) {
     unsigned long int i = 0;
     SKIP_WHITE_SPACES(line, i);
     skip_label(line, &i);

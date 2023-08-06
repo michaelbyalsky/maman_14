@@ -179,6 +179,7 @@ typedef struct DataWord {
         char string[2];
     } NumberStringUnion;
     enum Directives datatype;
+    struct DataWord *next;
 } DataWord;
 
 

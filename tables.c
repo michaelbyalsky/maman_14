@@ -4,6 +4,73 @@
 
 #include "tables.h"
 
+DataWord *createDataWordNode(enum Directives dataType) {
+    DataWord *newNode = (DataWord *) malloc(sizeof(DataWord));
+    if (newNode == NULL) {
+        perror("Memory allocation failed.");
+    }
+    newNode->datatype = dataType;
+    newNode->next = NULL;
+
+    return newNode;
+}
+
+void insertNumberDataWord(DataWord **head, int number) {
+    DataWord *newNode = createDataWordNode(DATA);
+    if (newNode != NULL) {
+        newNode->NumberStringUnion.number = number;
+
+        if (*head == NULL) {
+            *head = newNode;
+        } else {
+            DataWord *current = *head;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+}
+
+void insertStringDataWord(DataWord **head, char *string) {
+    DataWord *newNode = createDataWordNode(STRING);
+    if (newNode != NULL) {
+        strcpy(newNode->NumberStringUnion.string, string);
+
+        if (*head == NULL) {
+            *head = newNode;
+        } else {
+            DataWord *current = *head;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+}
+
+void printDataWordList(DataWord **head) {
+    DataWord *current = *head;
+    while (current != NULL) {
+        if (current->datatype == DATA) {
+            printf("Data - Value: %d\n", current->NumberStringUnion.number);
+        } else {
+            printf("Data - String: %s\n", current->NumberStringUnion.string);
+        }
+        current = current->next;
+    }
+}
+
+void freeDataWordList(DataWord **head) {
+    DataWord *current = *head;
+    while (current != NULL) {
+        DataWord *temp = current;
+        current = current->next;
+        free(temp);
+    }
+    *head = NULL;
+}
+
 
 Label *createLabelNode(const char *name, long address, enum LabelType type) {
     Label *newNode = (Label *) malloc(sizeof(Label));
@@ -225,3 +292,5 @@ void freeCodeWordList(CodeWord **head) {
     }
     *head = NULL;
 }
+
+

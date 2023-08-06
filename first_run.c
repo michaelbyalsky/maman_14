@@ -11,27 +11,27 @@
 int line_number;
 int is_label;
 
-void process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead);
+void process_line(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead);
 
 int find_label(char *line, char *label, unsigned long *line_index);
 
 int
-handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead, char *label);
+handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, char *label);
 
 int
-handle_string_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+handle_string_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
                         char *label);
 
-void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
                           char *label);
 
-void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img,
+void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
                                      Label **labelHead, char *label);
 
 int handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                        char *label);
 
-int first_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead) {
+int first_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead) {
     /* read the file */
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
@@ -42,13 +42,13 @@ int first_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **la
 
     line_number = 1;
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-        process_line(line, ic, dc, data_img, labelHead, codeHead);
+        process_line(line, ic, dc, dataImgHead, labelHead, codeHead);
         line_number++;
     }
     return 1;
 }
 
-void process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead) {
+void process_line(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead) {
     /*line index*/
     unsigned long int i = 0;
     char label[MAX_LINE_LENGTH];
@@ -75,7 +75,7 @@ void process_line(char *line, long *ic, long *dc, DataWord *data_img, Label **la
     SKIP_WHITE_SPACES(line, i);
     if (is_directive(line, &i)) {
         i++;
-        handle_directive(line, &i, ic, dc, data_img, labelHead, label);
+        handle_directive(line, &i, ic, dc, dataImgHead, labelHead, label);
         return;
     }
 
@@ -254,7 +254,7 @@ int find_label(char *line, char *label, unsigned long *line_index) {
 
 
 int
-handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead, char *label) {
+handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, char *label) {
     /* extract directive name */
     int directive = find_directive_by_name(&line[*line_index]);
     if (directive == DIRECTIVE_NOT_FOUND) {
@@ -263,10 +263,10 @@ handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, Data
     }
 
     if (directive == DATA) {
-        handle_data_directive(line, line_index, ic, dc, data_img, labelHead, label);
+        handle_data_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         return 1;
     } else if (directive == STRING) {
-        handle_string_directive(line, line_index, ic, dc, data_img, labelHead, label);
+        handle_string_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         return 1;
     } else if (directive == ENTRY) {
         /* check if label and if so log warning */
@@ -277,14 +277,14 @@ handle_directive(char *line, unsigned long *line_index, long *ic, long *dc, Data
     } else if (directive == EXTERN) {
         /* move the line_index 6 characters forward to skip the "extern" */
         *line_index += 6;
-        handle_extern_directive(line, line_index, ic, dc, data_img, labelHead, label);
+        handle_extern_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         return 1;
     }
     return 0;
 }
 
 int
-handle_string_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+handle_string_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
                         char *label) {
     int temp_index;
     /* move the line_index 6 characters forward to skip the "string" */
@@ -317,9 +317,10 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
 
     /* go until the next double quote and add each character to the data image */
     while (line[*line_index] != '"') {
-        data_img[*dc].datatype = STRING;
-        data_img[*dc].NumberStringUnion.string[0] = line[*line_index];
-        data_img[*dc].NumberStringUnion.string[1] = '\0';
+        char temp_string[2] = {'\0'};
+        temp_string[0] = line[*line_index];
+        temp_string[1] = '\0';
+        insertStringDataWord(dataImgHead, temp_string);
         (*dc)++;
         (*line_index)++;
     }
@@ -327,7 +328,7 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
     return 1;
 }
 
-void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img,
+void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
                                      Label **labelHead, char *label) {
     char extern_label[MAX_LABEL_SIZE];
     extern_label[0] = '\0';
@@ -343,7 +344,7 @@ void handle_extern_directive(const char *line, unsigned long *line_index, long *
     }
 }
 
-void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord *data_img, Label **labelHead,
+void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
                           char *label) {
     char line_copy[MAX_LINE_LENGTH];
     /* move the line_index 5 characters forward to skip the "data" */
@@ -367,12 +368,14 @@ void handle_data_directive(const char *line, unsigned long *line_index, long *ic
         }
         /* if number */
         if (isdigit(line_copy[temp_index])) {
+            char *endPrt;
+            int converted;
             while (isdigit(line_copy[temp_index])) {
                 temp_num[strlen(temp_num)] = line_copy[temp_index];
                 temp_index++;
             }
-            data_img[*dc].datatype = DATA;
-            data_img[*dc].NumberStringUnion.number = atoi(temp_num);
+            converted = strtol(temp_num, &endPrt, 10);
+            insertNumberDataWord(dataImgHead, converted);
             (*dc)++;
             continue;
         }

@@ -124,4 +124,37 @@ int updateLabelType(Label **head, const char *name, enum LabelType type);
  */
 CodeWord* findCodeWordByIC(CodeWord **head, int ic);
 
+
+/**
+ * @brief Creates a new data word node
+ * @param dataType - the type of the data
+ * @return
+ */
+DataWord *createDataWordNode(enum Directives dataType);
+
+/**
+ * @brief Inserts a data number code word to the end of the list
+ * @param head
+ * @param number
+ */
+void insertNumberDataWord(DataWord **head, int number);
+
+/**
+ * @brief Inserts a data string code word to the end of the list
+ * @param head
+ * @param string
+ */
+void insertStringDataWord(DataWord **head, char *string);
+
+/**
+ * @brief print the data word list
+ * @param head
+ */
+void printDataWordList(DataWord **head);
+
+/**
+ * @brief free the data word list
+ * @param head
+ */
+void freeDataWordList(DataWord **head);
 #endif

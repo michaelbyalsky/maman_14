@@ -3,7 +3,7 @@
 
 #include "code.h"
 
-int first_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **head, CodeWord **codeHead);
+int first_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **head, CodeWord **codeHead);
 
 
 #endif

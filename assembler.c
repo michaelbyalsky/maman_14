@@ -20,10 +20,9 @@ int main(int argc, char *argv[]) {
 }
 
 static void process_file(char *filename) {
-    int i;
     long ic = IC_START;
     long dc = DC_START;
-    DataWord data_img[CODE_IMG_LENGTH];
+    DataWord *dataImgHead = NULL;
     /* initialize the labelHead of the label list */
     Label *labelHead = NULL;
     CodeWord *codeHead = NULL;
@@ -35,16 +34,7 @@ static void process_file(char *filename) {
         return;
     }
     /* first run */
-    first_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
-
-    /* print the data image */
-    for (i = 0; i < dc; ++i) {
-        if (data_img[i].datatype == DATA) {
-            printf("%d: %d\n", i, data_img[i].NumberStringUnion.number);
-        } else if (data_img[i].datatype == STRING) {
-            printf("%d: %s\n", i, data_img[i].NumberStringUnion.string);
-        }
-    }
+    first_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
     if (is_error) {
         printf("Error in file %s\n", filename);
@@ -56,7 +46,7 @@ static void process_file(char *filename) {
 
     printf("\n\n-------------Second run-------------\n\n");
     ic = IC_START;
-    second_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
+    second_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
     printLabelList(&labelHead);
     printCodeWordList(&codeHead);

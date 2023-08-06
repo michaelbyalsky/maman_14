@@ -11,6 +11,6 @@
 #ifndef MAMAN_14_SECOND_RUN_H
 #define MAMAN_14_SECOND_RUN_H
 
-int second_run(char *filename, long *ic, long *dc, DataWord *data_img, Label **labelHead, CodeWord **codeHead);
+int second_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead);
 
 #endif
