@@ -119,6 +119,7 @@ enum codeWordType {
     DATA_NUMBER_WORD = 1,
     DATA_LABEL_WORD = 2,
     REGISTER_WORD = 3,
+    DATA_ADDRESS_WORD = 4,
     CODE_WORD_NOT_FOUND = -1
 };
 
@@ -151,6 +152,7 @@ typedef struct CodeWord {
         union dataUnion {
             signed int value;
             char *label;
+            unsigned int labelAddress;
         } data;
 
 

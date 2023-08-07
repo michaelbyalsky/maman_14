@@ -49,6 +49,7 @@ void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgH
             if (!is_valid_label_result.result) {
                 is_error = 1;
                 logger_error((const char *) is_valid_label_result.message, line_number_2);
+                return;
             }
             /* test it */
             if (!updateLabelType(labelHead, label, (enum LabelType) ENTRY)) {
@@ -79,8 +80,14 @@ void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgH
                     logger_error("Label not found", line_number_2);
                     return;
                 }
-                codeWord->CodeWordUnion.data.value = label->address;
-                codeWord->codeWordType = DATA_NUMBER_WORD;
+                /* if extern are 01 */
+                if (label->type == EXTERN_LABEL) {
+                    codeWord->are = ZERO_ONE;
+                } else if (label->type == ENTRY_LABEL) {
+                    codeWord->CodeWordUnion.data.labelAddress = label->address;
+                    codeWord->codeWordType = DATA_ADDRESS_WORD;
+                    return;
+                }
             }
         }
         (*ic) += l;

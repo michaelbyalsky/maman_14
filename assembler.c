@@ -48,6 +48,7 @@ static void process_file(char *filename) {
 
     printf("\n\n-------------Second run-------------\n\n");
     ic = IC_START;
+    line_address = INITIAL_ADDRESS;
     second_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
     printLabelList(&labelHead);

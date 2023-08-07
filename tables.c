@@ -109,7 +109,7 @@ void insertLabelNode(Label **head, const char *name, unsigned int address, enum 
 void printLabelList(Label **head) {
     Label *current = *head;
     while (current != NULL) {
-        printf("Name: %s, Address: %ld, Type: %d\n", current->name, current->address, current->type);
+        printf("Name: %s, Address: %u, Type: %d\n", current->name, current->address, current->type);
         current = current->next;
     }
 }
@@ -127,7 +127,7 @@ void freeLabelList(Label **head) {
 Label *findLabelByName(Label **head, const char *name) {
     Label *current = *head;
     while (current != NULL) {
-        if (strcmp(current->name, name) == 0) {
+        if (strncmp(current->name, name, strlen(current->name)) == 0) {
             return current;
         }
         current = current->next;
@@ -138,7 +138,7 @@ Label *findLabelByName(Label **head, const char *name) {
 int updateLabelType(Label **head, const char *name, enum LabelType type) {
     Label *current = *head;
     while (current != NULL) {
-        if (strcmp(current->name, name) == 0) {
+        if (strncmp(current->name, name, strlen(current->name)) == 0) {
             current->type = type;
             return 1;
         }
@@ -268,7 +268,10 @@ void printCodeWordList(CodeWord **head) {
         } else if (current->codeWordType == DATA_LABEL_WORD) {
             printf("Data - ARE: %d, Label: %s, address: %u\n",
                    current->are, current->CodeWordUnion.data.label, current->address);
-        } else {
+        }else if (current->codeWordType == DATA_ADDRESS_WORD) {
+            printf("Data - ARE: %d, Label address: %u, address: %u\n",
+                   current->are, current->CodeWordUnion.data.labelAddress, current->address);
+        }  else {
             printf("Data - ARE: %d, Value: %d, address: %u\n",
                    current->are, current->CodeWordUnion.data.value, current->address);
         }
