@@ -20,12 +20,19 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+
+/**
+ * @brief processes single file
+ * @param filename
+ */
 static void process_file(char *filename) {
     long ic = IC_START;
-    long dc = DC_START;
+    long dc = DC_START;\
+    /* initialize the data image table */
     DataWord *dataImgHead = NULL;
-    /* initialize the labelHead of the label list */
+    /* initialize the label table */
     Label *labelHead = NULL;
+    /* initialize the code table */
     CodeWord *codeHead = NULL;
 
     /* pre-assemble the file */
@@ -49,6 +56,8 @@ static void process_file(char *filename) {
     printf("\n\n-------------Second run-------------\n\n");
     ic = IC_START;
     line_address = INITIAL_ADDRESS;
+
+    /* second run */
     second_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
     printLabelList(&labelHead);

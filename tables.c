@@ -77,7 +77,7 @@ void freeDataWordList(DataWord **head) {
 }
 
 
-Label *createLabelNode(const char *name, long address, enum LabelType type) {
+Label *createLabelNode(const char *name, unsigned int address, enum LabelType type) {
     Label *newNode = (Label *) malloc(sizeof(Label));
     if (newNode == NULL) {
         perror("Memory allocation failed.");

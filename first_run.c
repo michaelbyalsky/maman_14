@@ -409,7 +409,7 @@ void handle_extern_directive(const char *line, unsigned long *line_index, long *
         is_error = 1;
         return;
     }
-    insertLabelNode(labelHead, extern_label, -1, EXTERN_LABEL);
+    insertLabelNode(labelHead, extern_label, 0, EXTERN_LABEL);
 }
 
 void handle_data_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,

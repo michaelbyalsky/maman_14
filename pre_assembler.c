@@ -177,29 +177,10 @@ void insertMacro(Macro **head, Macro *newMacro) {
     }
 }
 
-Macro *findMacro(Macro **head, const char *name) {
-    Macro *current = *head;
-    while (current != NULL) {
-        if (strcmp(current->name, name) == 0) {
-            return current;
-        }
-        current = current->next;
-    }
-    return NULL;
-}
-
 void freeMacroList(Macro **head) {
     while (*head != NULL) {
         Macro *temp = *head;
         *head = (*head)->next;
         free(temp);
-    }
-}
-
-void iterateMacroList(Macro **head, void (*callback)(Macro *)) {
-    Macro *current = *head;
-    while (current != NULL) {
-        callback(current);
-        current = current->next;
     }
 }

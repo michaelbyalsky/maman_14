@@ -65,7 +65,7 @@ void freeCodeWordList(CodeWord **head);
  * @param type - the type of the label
  * @return
  */
-Label *createLabelNode(const char *name, long address, enum LabelType type);
+Label *createLabelNode(const char *name, unsigned int address, enum LabelType type);
 
 /**
  * @brief Creates a new code word node

@@ -83,7 +83,8 @@ void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgH
                 /* if extern are 01 */
                 if (label->type == EXTERN_LABEL) {
                     codeWord->are = ZERO_ONE;
-                } else if (label->type == ENTRY_LABEL) {
+                /* if entry are 10 */
+                } else if (label->type == ENTRY_LABEL || label->type == CODE_LABEL || label->type == DATA_LABEL) {
                     codeWord->CodeWordUnion.data.labelAddress = label->address;
                     codeWord->codeWordType = DATA_ADDRESS_WORD;
                     return;

@@ -197,7 +197,8 @@ typedef struct {
 } Operand;
 
 /**
- * @brief give the operand its value and return the addressing method
+ * @brief give the operand its value depends on the string
+ * that the function received and return the addressing method
  * @param string
  * @param instruction
  * @param operand
