@@ -3,7 +3,6 @@
 
 #include "globals.h"
 
-#define MAX_MACRO_COUNT 100
 #define MAX_MACRO_NAME_LENGTH 100
 
 typedef struct Macro {
@@ -12,20 +11,56 @@ typedef struct Macro {
     struct Macro *next;
 } Macro;
 
+/**
+ * @brief load macros from file to macros table
+ * @param filename
+ * @param macrosHead
+ * @return
+ */
 int loadMacros(const char *filename, Macro **macrosHead);
 
+/**
+ * @brief replace macros in file and write the file
+ * @param filename
+ * @param macrosHead
+ * @param macroCount
+ * @param outputFilename
+ */
 void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, const char *outputFilename);
 
+/**
+ * @brief pre assemble the file
+ * @param filename
+ * @return
+ */
 char *pre_assemble(const char *filename);
 
+/**
+ * @brief generate output filename
+ * @param filename
+ * @return char - the output file name
+ */
 char *createOutputFilename(const char *filename);
 
+/**
+ * @brief create macro instance
+ * @param name
+ * @param value
+ * @return Macro
+ */
 Macro *createMacro(const char *name, const char *value);
 
+/**
+ * @brief insert macro to the macros table
+ * @param head
+ * @param newMacro
+ */
 void insertMacro(Macro **head, Macro *newMacro);
 
-Macro *findMacro(Macro **head, const char *name);
-
+/**
+ * @brief iterate over the macros table and free memory
+ * @param head
+ */
 void freeMacroList(Macro **head);
 
 #endif /* PRE_ASSEMBLER_H */

@@ -3,6 +3,7 @@
 #include "helpers.h"
 #include "code.h"
 
+/* directives mapping */
 Directive directives[] = {
         {"data",   DATA},
         {"string", STRING},
@@ -20,6 +21,7 @@ int find_directive_by_name(char *line) {
     return DIRECTIVE_NOT_FOUND;
 }
 
+/* registers mapping */
 Register registers[] = {
         {"@r0", R0},
         {"@r1", R1},
@@ -99,6 +101,7 @@ int stop_dest[] = {NOT_EXISTS};
 int not_found_source[] = {NOT_EXISTS};
 int not_found_dest[] = {NOT_EXISTS};
 
+/* instructions mapping */
 Instruction instructions[] = {
         {"mov",  MOV,                   mov_source,       mov_dest,       3, 2, 2},
         {"cmp",  CMP,                   cmp_source,       cmp_dest,       3, 3, 2},
@@ -203,4 +206,12 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
 
     func_result.result = NOT_EXISTS;
     return func_result;
+}
+
+
+int is_directive(const char *line, const unsigned long *line_index) {
+    if (line[*line_index] == '.') {
+        return 1;
+    }
+    return 0;
 }

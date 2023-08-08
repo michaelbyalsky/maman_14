@@ -119,6 +119,7 @@ enum codeWordType {
     DATA_NUMBER_WORD = 1,
     DATA_LABEL_WORD = 2,
     REGISTER_WORD = 3,
+    DATA_ADDRESS_WORD = 4,
     CODE_WORD_NOT_FOUND = -1
 };
 
@@ -143,12 +144,15 @@ typedef struct CodeWord {
             enum AddressMethod source;
             unsigned int opcode;
             enum AddressMethod dest;
+            int totalWords;
+            int ic;
         } instruction;
 
 
         union dataUnion {
             signed int value;
             char *label;
+            unsigned int labelAddress;
         } data;
 
 
@@ -160,13 +164,14 @@ typedef struct CodeWord {
 
     enum Are are;
     enum codeWordType codeWordType;
+    int address;
     struct CodeWord *next;
 } CodeWord;
 
 
 typedef struct Label {
     char *name;
-    long address;
+    unsigned int address;
     struct Label *next;
     enum LabelType type;
 } Label;
@@ -177,6 +182,8 @@ typedef struct DataWord {
         char string[2];
     } NumberStringUnion;
     enum Directives datatype;
+    unsigned int address;
+    struct DataWord *next;
 } DataWord;
 
 
@@ -190,7 +197,8 @@ typedef struct {
 } Operand;
 
 /**
- * @brief give the operand its value and return the addressing method
+ * @brief give the operand its value depends on the string
+ * that the function received and return the addressing method
  * @param string
  * @param instruction
  * @param operand
@@ -200,4 +208,11 @@ typedef struct {
 FuncResult get_operand_from_string(char *string, Instruction instruction, Operand *operand, int isSourceOperand);
 
 
+/**
+ * @brief function to determine if a line is a directive
+ * @param line
+ * @param line_index
+ * @return int
+ */
+int is_directive(const char *line, const unsigned long *line_index);
 #endif

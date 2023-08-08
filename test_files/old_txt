@@ -96,7 +96,7 @@ void process_file(const char *filename) {
     int ic = 100; /* instruction counter */
     int dc = 0; /* data counter */
     char line[MAX_LINE_LENGTH];
-    long data_img[1000];
+    long dataImgHead[1000];
     FILE *file = fopen(filename, "r");
     int i = 0;
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {

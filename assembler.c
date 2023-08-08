@@ -5,8 +5,10 @@
 #include "first_run.h"
 #include "code.h"
 #include "tables.h"
+#include "second_run.h"
 
 int is_error = 0;
+unsigned int line_address = INITIAL_ADDRESS;
 
 static void process_file(char *filename);
 
@@ -18,13 +20,19 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+
+/**
+ * @brief processes single file
+ * @param filename
+ */
 static void process_file(char *filename) {
-    int i;
     long ic = IC_START;
-    long dc = DC_START;
-    DataWord data_img[CODE_IMG_LENGTH];
-    /* initialize the labelHead of the label list */
+    long dc = DC_START;\
+    /* initialize the data image table */
+    DataWord *dataImgHead = NULL;
+    /* initialize the label table */
     Label *labelHead = NULL;
+    /* initialize the code table */
     CodeWord *codeHead = NULL;
 
     /* pre-assemble the file */
@@ -34,23 +42,29 @@ static void process_file(char *filename) {
         return;
     }
     /* first run */
-    first_run(outputFileName, &ic, &dc, data_img, &labelHead, &codeHead);
+    first_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
-    /* print the data image */
-    for (i = 0; i < dc; ++i) {
-        if (data_img[i].datatype == DATA) {
-            printf("%d: %d\n", i, data_img[i].NumberStringUnion.number);
-        } else if (data_img[i].datatype == STRING) {
-            printf("%d: %s\n", i, data_img[i].NumberStringUnion.string);
-        }
+    if (is_error) {
+        printf("Error in file %s\n", filename);
+        return;
     }
 
-    printf("ic: %ld\n", ic);
-
-    /* print the label list */
     printLabelList(&labelHead);
-    freeLabelList(&labelHead);
-
     printCodeWordList(&codeHead);
+    printDataWordList(&dataImgHead);
+
+    printf("\n\n-------------Second run-------------\n\n");
+    ic = IC_START;
+    line_address = INITIAL_ADDRESS;
+
+    /* second run */
+    second_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
+
+    printLabelList(&labelHead);
+    printCodeWordList(&codeHead);
+    printDataWordList(&dataImgHead);
+
+    freeLabelList(&labelHead);
     freeCodeWordList(&codeHead);
+    freeDataWordList(&dataImgHead);
 }
