@@ -399,8 +399,8 @@ handle_string_directive(const char *line, unsigned long *line_index, long *ic, l
 
 void handle_extern_directive(const char *line, unsigned long *line_index, long *ic, long *dc, DataWord **dataImgHead,
                              Label **labelHead, char *label) {
-    *line_index += strlen("extern");
     char extern_label[MAX_LABEL_SIZE];
+    *line_index += strlen("extern");
     extern_label[0] = '\0';
     SKIP_WHITE_SPACES(line, *line_index);
     get_label_from_string(&line[*line_index], extern_label);
