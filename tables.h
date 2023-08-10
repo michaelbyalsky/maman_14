@@ -14,7 +14,7 @@
  * @param ic - the ic of the instruction
  * @return
  */
-void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, int ic, int unsigned address);
+void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, int ic, int unsigned address);
 
 
 /**
@@ -24,7 +24,7 @@ void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsig
  * @param are - the are of the label
  * @return
  */
-void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are, int unsigned address);
+void insert_data_label_code_word(CodeWord **head, char *label, enum Are are, int unsigned address);
 
 /**
  * @brief Inserts a register code word to the end of the list
@@ -33,7 +33,7 @@ void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are, int uns
  * @param dest_register - the destination register
  * @return
  */
-void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
+void insert_register_code_word(CodeWord **head, enum Register source_register,
                             enum Register , int unsigned address);
 
 /**
@@ -43,21 +43,21 @@ void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
  * @param are - the are of the value
  * @return
  */
-void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are, int unsigned address);
+void insert_data_number_code_word(CodeWord **head, signed int value, enum Are are, int unsigned address);
 
 /**
  * @brief Creates a new code word node
  * @param head - the head of the list
  * @return
  */
-void printCodeWordList(CodeWord **head);
+void print_code_word_list(CodeWord **head);
 
 /**
  * @brief free the code word list
  * @param head - the head of the list
  * @return
  */
-void freeCodeWordList(CodeWord **head);
+void free_code_word_list(CodeWord **head);
 
 /**
  * @brief Creates a new code word node
@@ -65,7 +65,7 @@ void freeCodeWordList(CodeWord **head);
  * @param type - the type of the label
  * @return
  */
-Label *createLabelNode(const char *name, unsigned int address, enum LabelType type);
+Label *create_label_node(const char *name, unsigned int address, enum LabelType type);
 
 /**
  * @brief Creates a new code word node
@@ -74,21 +74,21 @@ Label *createLabelNode(const char *name, unsigned int address, enum LabelType ty
  * @param type - the type of the label
  * @return
  */
-void insertLabelNode(Label **head, const char *name, unsigned int address, enum LabelType type);
+void insert_label_node(Label **head, const char *name, unsigned int address, enum LabelType type);
 
 /**
  * @brief free the label list
  * @param head - the head of the list
  * @return
  */
-void freeLabelList(Label **head);
+void free_label_list(Label **head);
 
 /**
  * @brief print the label list
  * @param head - the head of the list
  * @return
  */
-void printLabelList(Label **head);
+void print_label_list(Label **head);
 
 /**
  * @brief find label by name
@@ -96,7 +96,7 @@ void printLabelList(Label **head);
  * @param name - the name of the label
  * @return Label
  */
-Label *findLabelByName(Label **head, const char *name);
+Label *find_label_by_name(Label **head, const char *name);
 
 /**
  * @brief check if label exists
@@ -104,7 +104,7 @@ Label *findLabelByName(Label **head, const char *name);
  * @param name - the name of the label
  * @return int
  */
-int labelExists(Label **head, const char *name);
+int label_exists(Label **head, const char *name);
 
 
 /**
@@ -114,7 +114,7 @@ int labelExists(Label **head, const char *name);
  * @param type - the type of the label
  * @return int
  */
-int updateLabelType(Label **head, const char *name, enum LabelType type);
+int update_label_type(Label **head, const char *name, enum LabelType type);
 
 /**
  * @brief find code word by ic
@@ -122,7 +122,7 @@ int updateLabelType(Label **head, const char *name, enum LabelType type);
  * @param ic
  * @return
  */
-CodeWord* findCodeWordByIC(CodeWord **head, int ic);
+CodeWord* find_code_word_by_ic(CodeWord **head, int ic);
 
 
 /**
@@ -130,31 +130,31 @@ CodeWord* findCodeWordByIC(CodeWord **head, int ic);
  * @param dataType - the type of the data
  * @return
  */
-DataWord *createDataWordNode(enum Directives dataType);
+DataWord *create_data_word_node(enum Directives dataType);
 
 /**
  * @brief Inserts a data number code word to the end of the list
  * @param head
  * @param number
  */
-void insertNumberDataWord(DataWord **head, int number, int unsigned address);
+void insert_number_data_word(DataWord **head, int number, int unsigned address);
 
 /**
  * @brief Inserts a data string code word to the end of the list
  * @param head
  * @param string
  */
-void insertStringDataWord(DataWord **head, char *string, int unsigned address);
+void insert_string_data_word(DataWord **head, char *string, int unsigned address);
 
 /**
  * @brief print the data word list
  * @param head
  */
-void printDataWordList(DataWord **head);
+void print_data_word_list(DataWord **head);
 
 /**
  * @brief free the data word list
  * @param head
  */
-void freeDataWordList(DataWord **head);
+void free_data_word_list(DataWord **head);
 #endif

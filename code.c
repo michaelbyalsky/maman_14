@@ -173,7 +173,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
                     return func_result;
                 }
                 operand->NameLabelUnion.number = number_operand;
-                operand->operandType = NUMBER_O;
+                operand->operandType = NUMBER_OPERAND;
                 func_result.result = IMMEDIATE;
                 return func_result;
             }
@@ -198,7 +198,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
             Register register_operand = findRegisterByName(string);
             if (register_operand.registerNumber != -1) {
                 operand->NameLabelUnion.register_operand = register_operand;
-                operand->operandType = REGISTER_O;
+                operand->operandType = REGISTER_OPERAND;
                 func_result.result = REGISTER_DIRECT;
                 return func_result;
             } else {

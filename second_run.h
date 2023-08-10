@@ -11,6 +11,14 @@
 #ifndef MAMAN_14_SECOND_RUN_H
 #define MAMAN_14_SECOND_RUN_H
 
-int second_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead);
+/**
+ * @brief process single line second run
+ * @param filename - the file name
+ * @param ic - instruction counter
+ * @param labelHead - label list
+ * @param codeHead - code list
+ * @return - int
+ */
+int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead);
 
 #endif
