@@ -444,10 +444,16 @@ void handle_data_directive(const char *line, unsigned long *line_index, long *ic
                 temp_index++;
             }
             converted = strtol(temp_num, &endPrt, 10);
-            insertNumberDataWord(dataImgHead, converted, line_address);
-            line_address++;
-            (*dc)++;
-            continue;
+            if (is12BitsSigned(converted)) {
+                insertNumberDataWord(dataImgHead, converted, line_address);
+                line_address++;
+                (*dc)++;
+                continue;
+            } else {
+                logger_error("number is not 12 bits signed", line_number);
+                is_error = 1;
+                return;
+            }
         }
         temp_index++;
     }

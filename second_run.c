@@ -4,7 +4,8 @@
 
 int line_number_2;
 
-void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead);
+void
+process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead);
 
 void skip_label(char *line, unsigned long *line_index);
 
@@ -24,7 +25,8 @@ int second_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label
     return 1;
 }
 
-void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead) {
+void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgHead, Label **labelHead,
+                             CodeWord **codeHead) {
     unsigned long int i = 0;
     SKIP_WHITE_SPACES(line, i);
     skip_label(line, &i);
@@ -72,22 +74,23 @@ void process_line_second_run(char *line, long *ic, long *dc, DataWord **dataImgH
             codeWord = codeWord->next;
             if (codeWord == NULL) {
                 logger_error("Code word not found", line_number_2);
+                is_error = 1;
                 return;
             }
             if (codeWord->codeWordType == DATA_LABEL_WORD) {
                 Label *label = findLabelByName(labelHead, codeWord->CodeWordUnion.data.label);
                 if (label == NULL) {
                     logger_error("Label not found", line_number_2);
+                    is_error = 1;
                     return;
                 }
                 /* if extern are 01 */
                 if (label->type == EXTERN_LABEL) {
                     codeWord->are = ZERO_ONE;
-                /* if entry are 10 */
+                    /* if entry are 10 */
                 } else if (label->type == ENTRY_LABEL || label->type == CODE_LABEL || label->type == DATA_LABEL) {
                     codeWord->CodeWordUnion.data.labelAddress = label->address;
                     codeWord->codeWordType = DATA_ADDRESS_WORD;
-                    return;
                 }
             }
         }

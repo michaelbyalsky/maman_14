@@ -167,6 +167,11 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
             int number_operand;
             FuncResult result = get_number_from_string(string, &number_operand);
             if (result.result) {
+                if (!is10BitsSigned(number_operand)) {
+                    func_result.result = NOT_EXISTS;
+                    strcpy((char *) func_result.message, "Number is not in 10 bits range");
+                    return func_result;
+                }
                 operand->NameLabelUnion.number = number_operand;
                 operand->operandType = NUMBER_O;
                 func_result.result = IMMEDIATE;
