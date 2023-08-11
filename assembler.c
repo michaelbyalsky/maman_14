@@ -45,26 +45,31 @@ static void process_file(char *filename) {
     first_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
     if (is_error) {
-        printf("Error in file %s\n", filename);
-        return;
+        printf("Error in first pass, file %s\n", filename);
+        exit(EXIT_FAILURE);
     }
 
-    printLabelList(&labelHead);
-    printCodeWordList(&codeHead);
-    printDataWordList(&dataImgHead);
+    print_label_list(&labelHead);
+    print_code_word_list(&codeHead);
+    print_data_word_list(&dataImgHead);
 
     printf("\n\n-------------Second run-------------\n\n");
     ic = IC_START;
     line_address = INITIAL_ADDRESS;
 
     /* second run */
-    second_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
+    second_run(outputFileName, &ic, &labelHead, &codeHead);
 
-    printLabelList(&labelHead);
-    printCodeWordList(&codeHead);
-    printDataWordList(&dataImgHead);
+    if (is_error) {
+        printf("Error in second pass, file %s\n", filename);
+        exit(EXIT_FAILURE);
+    }
 
-    freeLabelList(&labelHead);
-    freeCodeWordList(&codeHead);
-    freeDataWordList(&dataImgHead);
+    print_label_list(&labelHead);
+    print_code_word_list(&codeHead);
+    print_data_word_list(&dataImgHead);
+
+    free_label_list(&labelHead);
+    free_code_word_list(&codeHead);
+    free_data_word_list(&dataImgHead);
 }

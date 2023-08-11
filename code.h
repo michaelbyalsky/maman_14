@@ -3,6 +3,7 @@
 
 #include "globals.h"
 
+/** Enum for directives */
 enum Directives {
     DATA = 0,
     STRING = 1,
@@ -11,7 +12,7 @@ enum Directives {
     DIRECTIVE_NOT_FOUND = -1
 };
 
-
+/** Struct for directives */
 typedef struct {
     char *name;
     enum Directives directive;
@@ -76,6 +77,9 @@ enum Instructions {
     INSTRUCTION_NOT_FOUND = -1
 };
 
+/**
+ * @brief Struct for instructions
+ */
 typedef struct Instruction {
     char *name;
     enum Instructions opcode;
@@ -101,12 +105,16 @@ int is_instruction(char *line);
 Instruction findInstructionByName(const char *name);
 
 
+/**
+ * @brief Enum for addressing methods
+ */
 enum Are {
     ZERO = 0,
     ZERO_ONE = 1,
     ONE_ZERO = 2
 };
 
+/* Enum for addressing methods */
 enum AddressMethod {
     IMMEDIATE = 1,
     DIRECT = 3,
@@ -114,30 +122,30 @@ enum AddressMethod {
     NOT_EXISTS = 0
 };
 
+/* Enum for code word type */
 enum codeWordType {
     INSTRUCTION_WORD = 0,
     DATA_NUMBER_WORD = 1,
     DATA_LABEL_WORD = 2,
     REGISTER_WORD = 3,
-    DATA_ADDRESS_WORD = 4,
-    CODE_WORD_NOT_FOUND = -1
+    DATA_ADDRESS_WORD = 4
 };
 
+/* Enum for label type */
 enum LabelType {
     DATA_LABEL = 0,
     CODE_LABEL = 1,
     ENTRY_LABEL = 2,
-    EXTERN_LABEL = 3,
-    UNDEFINED_LABEL = -1
+    EXTERN_LABEL = 3
 };
 
+/* Enum for operand type */
 enum OperandType {
-    NUMBER_O = 0,
-    LABEL_O = 1,
-    REGISTER_O = 2,
-    OPERAND_NOT_FOUND = -1
+    NUMBER_OPERAND = 0,
+    REGISTER_OPERAND = 2
 };
 
+/** Struct for code word */
 typedef struct CodeWord {
     union CodeWordUnion {
         struct instruction {
@@ -164,11 +172,11 @@ typedef struct CodeWord {
 
     enum Are are;
     enum codeWordType codeWordType;
-    int address;
+    unsigned int address;
     struct CodeWord *next;
 } CodeWord;
 
-
+/** Struct for label */
 typedef struct Label {
     char *name;
     unsigned int address;
@@ -176,6 +184,7 @@ typedef struct Label {
     enum LabelType type;
 } Label;
 
+/** Struct for data word */
 typedef struct DataWord {
     union NumberStringUnion {
         int number;
@@ -186,7 +195,7 @@ typedef struct DataWord {
     struct DataWord *next;
 } DataWord;
 
-
+/** Struct for operand */
 typedef struct {
     union NameLabelUnion {
         int number;

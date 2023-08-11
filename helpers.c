@@ -167,3 +167,11 @@ void logger_warning(const char *message, int line_number) {
 int is_line_80_chars_long(const char *line) {
     return strlen(line) <= 80;
 }
+
+int is10BitsSigned(int num) {
+    return num >= -512 && num <= 511;
+}
+
+int is12BitsSigned(int num) {
+    return num >= -2048 && num <= 2047;
+}

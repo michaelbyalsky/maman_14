@@ -3,7 +3,15 @@
 
 #include "code.h"
 
-int first_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **head, CodeWord **codeHead);
-
+/**
+ * @brief process single line first run
+ * @param line - the line to process
+ * @param ic - instruction counter
+ * @param dc - data counter
+ * @param dataImgHead - data image head
+ * @param labelHead - label list
+ * @param codeHead - code list
+ */
+void first_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **head, CodeWord **codeHead);
 
 #endif

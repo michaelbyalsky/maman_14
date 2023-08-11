@@ -4,7 +4,7 @@
 
 #include "tables.h"
 
-DataWord *createDataWordNode(enum Directives dataType) {
+DataWord *create_data_word_node(enum Directives dataType) {
     DataWord *newNode = (DataWord *) malloc(sizeof(DataWord));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
@@ -15,8 +15,8 @@ DataWord *createDataWordNode(enum Directives dataType) {
     return newNode;
 }
 
-void insertNumberDataWord(DataWord **head, int number, int unsigned address) {
-    DataWord *newNode = createDataWordNode(DATA);
+void insert_number_data_word(DataWord **head, int number, int unsigned address) {
+    DataWord *newNode = create_data_word_node(DATA);
     if (newNode != NULL) {
         newNode->NumberStringUnion.number = number;
         newNode->address = address;
@@ -33,8 +33,8 @@ void insertNumberDataWord(DataWord **head, int number, int unsigned address) {
     }
 }
 
-void insertStringDataWord(DataWord **head, char *string, int unsigned address) {
-    DataWord *newNode = createDataWordNode(STRING);
+void insert_string_data_word(DataWord **head, char *string, int unsigned address) {
+    DataWord *newNode = create_data_word_node(STRING);
     if (newNode != NULL) {
         strcpy(newNode->NumberStringUnion.string, string);
         newNode->address = address;
@@ -51,7 +51,7 @@ void insertStringDataWord(DataWord **head, char *string, int unsigned address) {
     }
 }
 
-void printDataWordList(DataWord **head) {
+void print_data_word_list(DataWord **head) {
     int counter = 0;
     DataWord *current = *head;
     while (current != NULL) {
@@ -66,7 +66,7 @@ void printDataWordList(DataWord **head) {
     printf("number of data words: %d\n", counter);
 }
 
-void freeDataWordList(DataWord **head) {
+void free_data_word_list(DataWord **head) {
     DataWord *current = *head;
     while (current != NULL) {
         DataWord *temp = current;
@@ -77,7 +77,7 @@ void freeDataWordList(DataWord **head) {
 }
 
 
-Label *createLabelNode(const char *name, unsigned int address, enum LabelType type) {
+Label *create_label_node(const char *name, unsigned int address, enum LabelType type) {
     Label *newNode = (Label *) malloc(sizeof(Label));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
@@ -93,8 +93,8 @@ Label *createLabelNode(const char *name, unsigned int address, enum LabelType ty
     return newNode;
 }
 
-void insertLabelNode(Label **head, const char *name, unsigned int address, enum LabelType type) {
-    Label *newNode = createLabelNode(name, address, type);
+void insert_label_node(Label **head, const char *name, unsigned int address, enum LabelType type) {
+    Label *newNode = create_label_node(name, address, type);
     if (*head == NULL) {
         *head = newNode;
     } else {
@@ -106,7 +106,7 @@ void insertLabelNode(Label **head, const char *name, unsigned int address, enum 
     }
 }
 
-void printLabelList(Label **head) {
+void print_label_list(Label **head) {
     Label *current = *head;
     while (current != NULL) {
         printf("Name: %s, Address: %u, Type: %d\n", current->name, current->address, current->type);
@@ -114,7 +114,7 @@ void printLabelList(Label **head) {
     }
 }
 
-void freeLabelList(Label **head) {
+void free_label_list(Label **head) {
     Label *current = *head;
     while (current != NULL) {
         Label *temp = current;
@@ -124,7 +124,7 @@ void freeLabelList(Label **head) {
     }
 }
 
-Label *findLabelByName(Label **head, const char *name) {
+Label *find_label_by_name(Label **head, const char *name) {
     Label *current = *head;
     while (current != NULL) {
         if (strncmp(current->name, name, strlen(current->name)) == 0) {
@@ -135,7 +135,7 @@ Label *findLabelByName(Label **head, const char *name) {
     return NULL;
 }
 
-int updateLabelType(Label **head, const char *name, enum LabelType type) {
+int update_label_type(Label **head, const char *name, enum LabelType type) {
     Label *current = *head;
     while (current != NULL) {
         if (strncmp(current->name, name, strlen(current->name)) == 0) {
@@ -147,7 +147,7 @@ int updateLabelType(Label **head, const char *name, enum LabelType type) {
     return 0;
 }
 
-int labelExists(Label **head, const char *name) {
+int label_exists(Label **head, const char *name) {
     Label *current = *head;
     while (current != NULL) {
         if (strcmp(current->name, name) == 0) {
@@ -159,7 +159,7 @@ int labelExists(Label **head, const char *name) {
 }
 
 
-CodeWord *createCodeWordNode(enum codeWordType codeWordType, int unsigned address) {
+CodeWord *create_code_word_node(enum codeWordType codeWordType, int unsigned address) {
     CodeWord *newNode = (CodeWord *) malloc(sizeof(CodeWord));
     if (newNode == NULL) {
         perror("Memory allocation failed.");
@@ -171,9 +171,9 @@ CodeWord *createCodeWordNode(enum codeWordType codeWordType, int unsigned addres
     return newNode;
 }
 
-void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords,
+void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords,
                                int ic, int unsigned address) {
-    CodeWord *newNode = createCodeWordNode(INSTRUCTION_WORD, address);
+    CodeWord *newNode = create_code_word_node(INSTRUCTION_WORD, address);
     if (newNode != NULL) {
         newNode->are = ZERO;
         newNode->CodeWordUnion.instruction.dest = dest;
@@ -194,9 +194,9 @@ void insertInstructionCodeWord(CodeWord **head, enum AddressMethod source, unsig
     }
 }
 
-void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
+void insert_register_code_word(CodeWord **head, enum Register source_register,
                             enum Register dest_register, int unsigned address) {
-    CodeWord *newNode = createCodeWordNode(REGISTER_WORD, address);
+    CodeWord *newNode = create_code_word_node(REGISTER_WORD, address);
     if (newNode != NULL) {
         newNode->are = ZERO;
         newNode->CodeWordUnion.registerWord.source = source_register;
@@ -214,8 +214,8 @@ void insertRegisterCodeWord(CodeWord **head, enum Register source_register,
     }
 }
 
-void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are, int unsigned address) {
-    CodeWord *newNode = createCodeWordNode(DATA_NUMBER_WORD, address);
+void insert_data_number_code_word(CodeWord **head, signed int value, enum Are are, int unsigned address) {
+    CodeWord *newNode = create_code_word_node(DATA_NUMBER_WORD, address);
     if (newNode != NULL) {
         newNode->are = are;
         newNode->CodeWordUnion.data.value = value;
@@ -232,8 +232,8 @@ void insertDataNumberCodeWord(CodeWord **head, signed int value, enum Are are, i
     }
 }
 
-void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are, int unsigned address) {
-    CodeWord *newNode = createCodeWordNode(DATA_LABEL_WORD, address);
+void insert_data_label_code_word(CodeWord **head, char *label, enum Are are, int unsigned address) {
+    CodeWord *newNode = create_code_word_node(DATA_LABEL_WORD, address);
     if (newNode != NULL) {
         newNode->are = are;
         newNode->CodeWordUnion.data.label = malloc(strlen(label) + 1);
@@ -254,7 +254,7 @@ void insertDataLabelCodeWord(CodeWord **head, char *label, enum Are are, int uns
     }
 }
 
-void printCodeWordList(CodeWord **head) {
+void print_code_word_list(CodeWord **head) {
     int number = 0;
     CodeWord *current = *head;
     while (current != NULL) {
@@ -282,7 +282,7 @@ void printCodeWordList(CodeWord **head) {
     printf("number of code words: %d\n", number);
 }
 
-CodeWord* findCodeWordByIC(CodeWord **head, int ic) {
+CodeWord* find_code_word_by_ic(CodeWord **head, int ic) {
     CodeWord *current = *head;
     while (current != NULL) {
         if (current->CodeWordUnion.instruction.ic == ic) {
@@ -294,7 +294,7 @@ CodeWord* findCodeWordByIC(CodeWord **head, int ic) {
 }
 
 
-void freeCodeWordList(CodeWord **head) {
+void free_code_word_list(CodeWord **head) {
     CodeWord *current = *head;
     while (current != NULL) {
         CodeWord *temp = current;

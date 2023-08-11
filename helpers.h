@@ -73,4 +73,18 @@ void logger_warning(const char *message, int line_number);
  */
 int is_line_80_chars_long(const char *line);
 
+/**
+ * @brief Check if line not more that 80 chars long
+ * @param num
+ * @return int
+ */
+int is10BitsSigned(int num);
+
+
+/**
+ * @brief Check if line not more that 80 chars long
+ * @param num
+ */
+int is12BitsSigned(int num);
+
 #endif
