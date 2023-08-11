@@ -8,9 +8,12 @@
 #include "tables.h"
 #include "second_run.h"
 
+FILE *outputFile;
+const char *directoryName = "outputs";
+char filePath[100];
+
 int is_error = 0;
 unsigned int line_address = INITIAL_ADDRESS;
-const char *directoryName = "outputs";
 
 static void process_file(char *filename);
 
@@ -74,7 +77,9 @@ static void process_file(char *filename) {
         }
     }
 
-    FILE *outputFile = fopen("outputs/ps.ob", "w");
+    sprintf(filePath, "%s/ps.ob", directoryName);
+    outputFile = fopen(filePath, "w");
+
     if (outputFile == NULL) {
         printf("Error opening file.\n");
         is_error = EXIT_FAILURE;
