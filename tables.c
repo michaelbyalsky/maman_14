@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "tables.h"
 
@@ -304,4 +305,79 @@ void free_code_word_list(CodeWord **head) {
     *head = NULL;
 }
 
+void print_base64(FILE *outputFile, unsigned int value) {
+    const char base64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+    fprintf(outputFile, "%c%c\n", base64Chars[(value >> 6) & 0x3F], base64Chars[value & 0x3F]);
+}
+
+void print_code_word_list_binary(FILE *outputFile, CodeWord **head)
+{
+    CodeWord *current = *head;
+    while (current != NULL)
+    {
+        if (current->codeWordType == INSTRUCTION_WORD)
+        {
+            unsigned int binaryCode =
+                ((current->CodeWordUnion.instruction.source & 0x7) << 9) |
+                ((current->CodeWordUnion.instruction.opcode & 0xF) << 5) |
+                ((current->CodeWordUnion.instruction.dest & 0x7) << 2) |
+                (current->are & 0x3);
+            printBase64(outputFile, binaryCode);
+        }
+        else if (current->codeWordType == REGISTER_WORD)
+        {
+            unsigned int binaryCode = ((current->CodeWordUnion.registerWord.source & 0x1F) << 7) |
+                                      ((current->CodeWordUnion.registerWord.dest & 0x1F) << 2) |
+                                      (current->are & 0x3);
+            printBase64(outputFile, binaryCode);
+        }
+        else if (current->codeWordType == DATA_LABEL_WORD || current->codeWordType == DATA_ADDRESS_WORD)
+        {
+            unsigned int binaryCode;
+            if(current->are == ZERO_ONE){
+                binaryCode = (current->are & 0x3);
+            }else{
+                binaryCode = ((current->CodeWordUnion.data.labelAddress & 0xFFF) << 2) | (current->are & 0x3);
+            }
+            printBase64(outputFile, binaryCode);
+        }
+        else if (current->codeWordType == DATA_NUMBER_WORD)
+        {
+            unsigned int binaryCode;
+            if (current->CodeWordUnion.data.value < 0) {
+                binaryCode = (unsigned int)(((~abs(current->CodeWordUnion.data.value) + 1) & 0xFFF) << 2) | (current->are & 0x3);
+            } else {
+                binaryCode = current->CodeWordUnion.data.value & 0xFFF;
+            }
+            printBase64(outputFile, binaryCode);
+        }
+
+        current = current->next;
+    }
+}
+
+void print_data_word_list_binary(FILE *outputFile, DataWord **head) {
+    DataWord *current = *head;
+    while (current != NULL) {
+        unsigned int binaryCode;
+        if (current->datatype == DATA) {
+            if (current->NumberStringUnion.number < 0) {
+                binaryCode = (unsigned int)(((~abs(current->NumberStringUnion.number) + 1) & 0xFFF));
+            } else {
+                binaryCode = current->NumberStringUnion.number & 0xFFF;
+            }
+        } else {
+            binaryCode = (unsigned int)current->NumberStringUnion.string[0];
+        }
+
+        printBase64(outputFile, binaryCode);
+
+        current = current->next;
+    }
+}
+
+int is_directory_exists(const char *path) {
+    struct stat st;
+    return stat(path, &st) == 0 && S_ISDIR(st.st_mode);
+}

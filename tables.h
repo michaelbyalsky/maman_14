@@ -157,4 +157,24 @@ void print_data_word_list(DataWord **head);
  * @param head
  */
 void free_data_word_list(DataWord **head);
+
+/**
+ * @brief Creates a new code word node
+ * @param head - the head of the list
+ * @return
+ */
+void print_code_word_list_binary(FILE *outputFile, CodeWord **head);
+
+/**
+ * @brief print the data word list
+ * @param head
+ */
+void print_data_word_list_binary(FILE *outputFile, DataWord **head);
+
+/**
+ * @brief check if directory exists
+ * @param path - the head of the list path
+ * @return int
+ */
+int is_directory_exists(const char *path);
 #endif

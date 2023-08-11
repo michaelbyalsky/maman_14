@@ -65,9 +65,22 @@ static void process_file(char *filename) {
         exit(EXIT_FAILURE);
     }
 
-    print_label_list(&labelHead);
-    print_code_word_list(&codeHead);
-    print_data_word_list(&dataImgHead);
+    const char *directoryName = "outputs";
+    if (!is_directory_exists(directoryName)) {
+        if (mkdir(directoryName, 0777) != 0) {
+            printf("Error creating directory.\n");
+            is_error = EXIT_FAILURE;
+        }
+    }
+
+    FILE *outputFile = fopen("outputs/ps.ob", "w");
+    if (outputFile == NULL) {
+        printf("Error opening file.\n");
+        is_error = EXIT_FAILURE;
+    }
+
+    print_code_word_list_binary(outputFile,&codeHead);
+    print_data_word_list_binary(outputFile,&dataImgHead);
 
     free_label_list(&labelHead);
     free_code_word_list(&codeHead);
