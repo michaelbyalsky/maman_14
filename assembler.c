@@ -1,6 +1,7 @@
 #include "pre_assembler.h"
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "first_run.h"
 #include "code.h"
@@ -9,6 +10,7 @@
 
 int is_error = 0;
 unsigned int line_address = INITIAL_ADDRESS;
+const char *directoryName = "outputs";
 
 static void process_file(char *filename);
 
@@ -65,7 +67,6 @@ static void process_file(char *filename) {
         exit(EXIT_FAILURE);
     }
 
-    const char *directoryName = "outputs";
     if (!is_directory_exists(directoryName)) {
         if (mkdir(directoryName, 0777) != 0) {
             printf("Error creating directory.\n");

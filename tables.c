@@ -323,14 +323,14 @@ void print_code_word_list_binary(FILE *outputFile, CodeWord **head)
                 ((current->CodeWordUnion.instruction.opcode & 0xF) << 5) |
                 ((current->CodeWordUnion.instruction.dest & 0x7) << 2) |
                 (current->are & 0x3);
-            printBase64(outputFile, binaryCode);
+            print_base64(outputFile, binaryCode);
         }
         else if (current->codeWordType == REGISTER_WORD)
         {
             unsigned int binaryCode = ((current->CodeWordUnion.registerWord.source & 0x1F) << 7) |
                                       ((current->CodeWordUnion.registerWord.dest & 0x1F) << 2) |
                                       (current->are & 0x3);
-            printBase64(outputFile, binaryCode);
+            print_base64(outputFile, binaryCode);
         }
         else if (current->codeWordType == DATA_LABEL_WORD || current->codeWordType == DATA_ADDRESS_WORD)
         {
@@ -340,7 +340,7 @@ void print_code_word_list_binary(FILE *outputFile, CodeWord **head)
             }else{
                 binaryCode = ((current->CodeWordUnion.data.labelAddress & 0xFFF) << 2) | (current->are & 0x3);
             }
-            printBase64(outputFile, binaryCode);
+            print_base64(outputFile, binaryCode);
         }
         else if (current->codeWordType == DATA_NUMBER_WORD)
         {
@@ -350,7 +350,7 @@ void print_code_word_list_binary(FILE *outputFile, CodeWord **head)
             } else {
                 binaryCode = current->CodeWordUnion.data.value & 0xFFF;
             }
-            printBase64(outputFile, binaryCode);
+            print_base64(outputFile, binaryCode);
         }
 
         current = current->next;
@@ -371,7 +371,7 @@ void print_data_word_list_binary(FILE *outputFile, DataWord **head) {
             binaryCode = (unsigned int)current->NumberStringUnion.string[0];
         }
 
-        printBase64(outputFile, binaryCode);
+        print_base64(outputFile, binaryCode);
 
         current = current->next;
     }
