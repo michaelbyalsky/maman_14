@@ -45,20 +45,20 @@ void process_line_second_run(char *line, long *ic, Label **labelHead,
 
     /* if is directive we should update the label if it is entry */
     if (is_directive(line, &i)) {
-        int directive;
+        Directive directive;
         i++;
         directive = find_directive_by_name(&line[i]);
-        if (directive == DIRECTIVE_NOT_FOUND) {
+        if (directive.directive == DIRECTIVE_NOT_FOUND) {
             logger_error("Invalid directive", line_number_2);
             is_error = 1;
         }
         /* skip the directive data, string and extern */
-        if (directive == DATA || directive == STRING || directive == EXTERN) {
+        if (directive.directive == DATA || directive.directive == STRING || directive.directive == EXTERN) {
             return;
-        } else if (directive == ENTRY) {
+        } else if (directive.directive == ENTRY) {
             FuncResult is_valid_label_result;
             char label[MAX_LINE_LENGTH];
-            i += strlen("entry");
+            i += strlen(directive.name);
             SKIP_WHITE_SPACES(line, i);
             get_label_from_string(&line[i], label);
             is_valid_label_result = is_valid_label(label);
