@@ -7,7 +7,7 @@ endmcro
 prn -5
 bne LOOP
 mcro m2
-sub @r5, @r8
+sub @r5, @r7
     bne END
 endmcro
 m1

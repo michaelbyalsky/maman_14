@@ -77,7 +77,7 @@ handle_data_directive(const char *line, unsigned long *line_index, long *dc, Dat
 void handle_extern_directive(const char *line, unsigned long *line_index, long *dc, DataWord **dataImgHead,
                              Label **labelHead, char *label);
 
-int
+void
 handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                    char *label);
 
@@ -142,8 +142,7 @@ void process_line(char *line, long *ic, long *dc, DataWord **dataImgHead, Label 
     }
 }
 
-int
-handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
+void handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, Label **labelHead, CodeWord **codeHead,
                    char *label) {
     int num_of_operands = 0;
     enum AddressMethod operand_1_address_method;
@@ -159,7 +158,8 @@ handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, La
 
     if (instruction.opcode == -1) {
         logger_error("instruction not found", line_number);
-        return 0;
+        is_error = 1;
+        return;
     }
     SKIP_WHITE_SPACES(line, *line_index);
     *line_index += strlen(instruction.name);
@@ -186,7 +186,8 @@ handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, La
     if (num_of_operands != instruction.numberOfOperands) {
         printf("Error: instruction %s must have %d operands in Line: %d\n", instruction.name,
                instruction.numberOfOperands, line_number);
-        return -1;
+        is_error = 1;
+        return;
     }
 
 
@@ -195,6 +196,8 @@ handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, La
         FuncResult result = get_operand_from_string(operand_1_string, instruction, &operand_1, 0);
         if (!result.result) {
             logger_error((const char *) result.message, line_number);
+            is_error = 1;
+            return;
         }
         operand_1_address_method = result.result;
     /* if number of operands is 2 there is source and dest operands */
@@ -202,6 +205,8 @@ handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, La
         FuncResult result = get_operand_from_string(operand_1_string, instruction, &operand_1, 1);
         if (!result.result) {
             logger_error((const char *) result.message, line_number);
+            is_error = 1;
+            return;
         }
         operand_1_address_method = result.result;
     }
@@ -211,6 +216,8 @@ handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, La
         FuncResult result = get_operand_from_string(operand_2_string, instruction, &operand_2, 0);
         if (!result.result) {
             logger_error((const char *) result.message, line_number);
+            is_error = 1;
+            return;
         }
         operand_2_address_method = result.result;
     }
@@ -219,7 +226,7 @@ handle_instruction(char *line, unsigned long *line_index, long *ic, long *dc, La
         if (label_exists(labelHead, label)) {
             logger_error("label already exists", line_number);
             is_error = 1;
-            return 0;
+            return;
         }
         insert_label_node(labelHead, label, line_address, CODE_LABEL);
     }
@@ -420,6 +427,7 @@ void handle_string_directive(const char *line, unsigned long *line_index, long *
     while (line[temp_index] != '"') {
         if (line[temp_index] == '\0') {
             logger_error("string directive must be followed by a string", line_number);
+            is_error = 1;
             return;
         }
         temp_index++;
@@ -522,11 +530,13 @@ handle_data_directive(const char *line, unsigned long *line_index, long *dc, Dat
             if (label_exists(labelHead, label)) {
                 logger_error("label already exists", line_number);
                 is_error = 1;
+                return;
             }
             insert_label_node(labelHead, label, start_address, DATA_LABEL);
         }
     } else {
         is_error = 1;
         logger_error("data directive must be followed by a number", line_number);
+        return;
     }
 }

@@ -71,6 +71,7 @@ void process_line_second_run(char *line, long *ic, Label **labelHead,
             if (!update_label_type(labelHead, label, (enum LabelType) ENTRY)) {
                 logger_error("update label operation failed", line_number_2);
                 is_error = 1;
+                return;
             };
             return;
         }
@@ -84,6 +85,7 @@ void process_line_second_run(char *line, long *ic, Label **labelHead,
         if (codeWord == NULL) {
             logger_error("Code word not found", line_number_2);
             is_error = 1;
+            return;
         }
         l = codeWord->CodeWordUnion.instruction.totalWords;
         /* loop over the extra words, find the label and update the address */
