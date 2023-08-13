@@ -489,7 +489,7 @@ handle_data_directive(const char *line, unsigned long *line_index, long *dc, Dat
             temp_index++;
             continue;
         }
-        /* if - */
+        /* if negetive */
         if (line_copy[temp_index] == '-') {
             temp_num[0] = '-';
             temp_index++;
