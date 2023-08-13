@@ -175,3 +175,27 @@ int is10BitsSigned(int num) {
 int is12BitsSigned(int num) {
     return num >= -2048 && num <= 2047;
 }
+
+char *getNewFileName(const char *filename, const char *suffix) {
+    char *outputFileName = malloc(strlen(filename) + strlen(suffix) + 1);
+    char *as = ".as";
+    char *extension;
+    strcpy(outputFileName, filename);
+    extension = strstr(outputFileName, as);
+    strcpy(extension, suffix);
+    return outputFileName;
+}
+
+/**
+ * @brief Creates the output file name by appending "_pre" to the original file name before the .as extension.
+ * @param filename The name of the original file.
+ * @return The name of the output file.
+ */
+char *createOutputFilename(const char *filename) {
+    char *outputFilename = malloc(sizeof(char) * (strlen(filename) + 5));
+    char *extension;
+    strcpy(outputFilename, filename);
+    extension = strstr(outputFilename, ".as"); /* Find the .as extension */
+    strcpy(extension, "_pre.as"); /* Replace the .as extension with _pre.as */
+    return outputFilename;
+}

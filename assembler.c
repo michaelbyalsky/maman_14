@@ -8,8 +8,6 @@
 #include "tables.h"
 #include "second_run.h"
 
-FILE *outputFile;
-const char *directoryName = "outputs";
 char filePath[100];
 
 int is_error = 0;
@@ -31,8 +29,17 @@ int main(int argc, char *argv[]) {
  * @param filename
  */
 static void process_file(char *filename) {
+    const char *entriesSuffix = ".ent";
+    const char *externalsSuffix = ".ext";
+    const char *objectSuffix = ".ob";
+    char *entriesFileName;
+    char *externalsFileName;
+    char *objectFileName;
+    FILE *entries;
+    FILE *externals;
+    FILE *object;
     long ic = IC_START;
-    long dc = DC_START;\
+    long dc = DC_START;
     /* initialize the data image table */
     DataWord *dataImgHead = NULL;
     /* initialize the label table */
@@ -65,28 +72,17 @@ static void process_file(char *filename) {
     /* second run */
     second_run(outputFileName, &ic, &labelHead, &codeHead);
 
-    if (is_error) {
-        printf("Error in second pass, file %s\n", filename);
-        exit(EXIT_FAILURE);
-    }
 
-    if (!is_directory_exists(directoryName)) {
-        if (mkdir(directoryName, 0777) != 0) {
-            printf("Error creating directory.\n");
-            is_error = EXIT_FAILURE;
-        }
-    }
+    entriesFileName = getNewFileName(filename, entriesSuffix);
+    externalsFileName = getNewFileName(filename, externalsSuffix);
+    objectFileName = getNewFileName(filename, objectSuffix);
 
-    sprintf(filePath, "%s/ps.ob", directoryName);
-    outputFile = fopen(filePath, "w");
+    entries = fopen(entriesFileName, "w");
+    externals = fopen(externalsFileName, "w");
+    object = fopen(objectFileName, "w");
 
-    if (outputFile == NULL) {
-        printf("Error opening file.\n");
-        is_error = EXIT_FAILURE;
-    }
-
-    print_code_word_list_binary(outputFile,&codeHead);
-    print_data_word_list_binary(outputFile,&dataImgHead);
+    print_code_word_list_binary(object,&codeHead);
+    print_data_word_list_binary(object,&dataImgHead);
 
     free_label_list(&labelHead);
     free_code_word_list(&codeHead);

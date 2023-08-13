@@ -87,4 +87,13 @@ int is10BitsSigned(int num);
  */
 int is12BitsSigned(int num);
 
+
+/**
+ * @brief create new file name with suffix
+ * @param filename
+ * @param suffix
+ * @return
+ */
+char *getNewFileName(const char *filename, const char *suffix);
+
 #endif

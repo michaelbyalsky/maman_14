@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "pre_assembler.h"
+#include "helpers.h"
 
 
 /**
@@ -117,20 +118,6 @@ void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, con
 }
 
 /**
- * @brief Creates the output file name by appending "_pre" to the original file name before the .as extension.
- * @param filename The name of the original file.
- * @return The name of the output file.
- */
-char *createOutputFilename(const char *filename) {
-    char *outputFilename = malloc(sizeof(char) * (strlen(filename) + 5));
-    char *extension;
-    strcpy(outputFilename, filename);
-    extension = strstr(outputFilename, ".as"); /* Find the .as extension */
-    strcpy(extension, "_pre.as"); /* Replace the .as extension with _pre.as */
-    return outputFilename;
-}
-
-/**
  * @brief Pre-assembles a file by replacing macros with their values.
  * @param filename The name of the file to pre-assemble.
  * @return The name of the output file.
@@ -138,7 +125,7 @@ char *createOutputFilename(const char *filename) {
 char *pre_assemble(const char *filename) {
     Macro *macrosHead = NULL;
     int macroCount = loadMacros(filename, &macrosHead);
-    char *outputFilename = createOutputFilename(filename);
+    char *outputFilename = getNewFileName(filename, "_pre.as");
 
     if (macroCount == 0) {
         printf("No macros found.\n");

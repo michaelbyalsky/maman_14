@@ -16,6 +16,6 @@ bne LOOP
 m2
 END: stop
 m2
-STR: .string “abcdef”
+STR: .string "abcdef"
 LENGTH: .data 6,-9,15
 K: .data 22
