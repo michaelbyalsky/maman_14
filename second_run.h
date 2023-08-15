@@ -19,6 +19,6 @@
  * @param codeHead - code list
  * @return - int
  */
-int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead);
+int second_run(char *filename, unsigned int *ic, Label **labelHead, CodeWord **codeHead);
 
 #endif

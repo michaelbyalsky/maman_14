@@ -4,7 +4,7 @@
 
 int line_number_2;
 
-void process_line_second_run(char *line, long *ic, Label **labelHead, CodeWord **codeHead);
+void process_line_second_run(char *line, unsigned int *ic, Label **labelHead, CodeWord **codeHead);
 
 /**
  * @brief the function skips the label in the line
@@ -13,7 +13,7 @@ void process_line_second_run(char *line, long *ic, Label **labelHead, CodeWord *
  */
 void skip_label(char *line, unsigned long *line_index);
 
-int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead) {
+int second_run(char *filename, unsigned int *ic, Label **labelHead, CodeWord **codeHead) {
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -36,7 +36,7 @@ int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead)
  * @param labelHead
  * @param codeHead
  */
-void process_line_second_run(char *line, long *ic, Label **labelHead,
+void process_line_second_run(char *line, unsigned int *ic, Label **labelHead,
                              CodeWord **codeHead) {
     unsigned long int i = 0;
     SKIP_WHITE_SPACES(line, i);
