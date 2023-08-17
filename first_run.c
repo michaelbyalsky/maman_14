@@ -382,25 +382,27 @@ void
 handle_directive(char *line, unsigned long *line_index, unsigned int *ic, unsigned int *dc, DataWord **dataImgHead, Label **labelHead,
                  char *label) {
     /* extract directive name */
-    int directive = find_directive_by_name(&line[*line_index]);
-    if (directive == DIRECTIVE_NOT_FOUND) {
+    Directive directive = find_directive_by_name(&line[*line_index]);
+    if (directive.directive == DIRECTIVE_NOT_FOUND) {
         logger_error("directive not found", line_number);
         is_error = 1;
         return;
     }
 
-    if (directive == DATA) {
+    *line_index += strlen(directive.name);
+
+    if (directive.directive == DATA) {
         handle_data_directive(line, line_index, dc, dataImgHead, labelHead, label);
         return;
-    } else if (directive == STRING) {
+    } else if (directive.directive == STRING) {
         handle_string_directive(line, line_index, ic, dc, dataImgHead, labelHead, label);
         return;
-    } else if (directive == ENTRY) {
+    } else if (directive.directive == ENTRY) {
         if (is_label) {
             logger_warning("Warning: entry directive entry cannot be followed by a label", line_number);
         }
         return;
-    } else if (directive == EXTERN) {
+    } else if (directive.directive == EXTERN) {
         /* move the line_index 6 characters forward to skip the "extern" */
         handle_extern_directive(line, line_index, dc, dataImgHead, labelHead, label);
         return;
@@ -410,9 +412,7 @@ handle_directive(char *line, unsigned long *line_index, unsigned int *ic, unsign
 void handle_string_directive(const char *line, unsigned long *line_index, unsigned int *ic, unsigned int *dc, DataWord **dataImgHead,
                             Label **labelHead,
                             char *label) {
-    int temp_index;
-    /* move the line_index 6 characters forward to skip the "string" */
-    *line_index += 6;
+    unsigned long temp_index;
     SKIP_WHITE_SPACES(line, *line_index);
     /* check if the next character is a double quote */
     if (line[*line_index] != '"') {
@@ -466,7 +466,6 @@ void handle_string_directive(const char *line, unsigned long *line_index, unsign
 void handle_extern_directive(const char *line, unsigned long *line_index, unsigned int *dc, DataWord **dataImgHead,
                              Label **labelHead, char *label) {
     char extern_label[MAX_LABEL_SIZE];
-    *line_index += strlen("extern");
     extern_label[0] = '\0';
     SKIP_WHITE_SPACES(line, *line_index);
     get_label_from_string(&line[*line_index], extern_label);
@@ -485,10 +484,9 @@ handle_data_directive(const char *line, unsigned long *line_index, unsigned int 
                       char *label) {
     char line_copy[MAX_LINE_LENGTH];
     /* move the line_index 5 characters forward to skip the "data" */
-    int start_dc = *dc;
+    unsigned int start_dc = *dc;
     int temp_index = 0;
     unsigned int start_address = line_address;
-    *line_index += 5;
     line_copy[0] = '\0';
     strcpy(line_copy, &line[*line_index]);
     remove_white_spaces(line_copy, 0);
