@@ -8,17 +8,18 @@ Directive directives[] = {
         {"data",   DATA},
         {"string", STRING},
         {"entry",  ENTRY},
-        {"extern", EXTERN}
+        {"extern", EXTERN},
+        {"",       DIRECTIVE_NOT_FOUND}
 };
 
-int find_directive_by_name(char *line) {
+Directive find_directive_by_name(char *line) {
     int i;
     for (i = 0; i < sizeof(directives) / sizeof(Directive); ++i) {
         if (strncmp(directives[i].name, line, strlen(directives[i].name)) == 0) {
-            return directives[i].directive;
+            return directives[i];
         }
     }
-    return DIRECTIVE_NOT_FOUND;
+    return directives[4];
 }
 
 /* registers mapping */

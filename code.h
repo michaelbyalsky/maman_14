@@ -22,9 +22,9 @@ typedef struct {
 /**
  * @brief find the directive by name, gets a string that in the beginning of it there is a directive name
  * @param line
- * @return int
+ * @return Directive
  */
-int find_directive_by_name(char *line);
+Directive find_directive_by_name(char *line);
 
 /**
  * @brief Enum for registers
