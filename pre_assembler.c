@@ -131,7 +131,6 @@ char *pre_assemble(const char *filename) {
         printf("No macros found.\n");
     }
     replaceMacros(filename, &macrosHead, macroCount, outputFilename);
-    printf("pre-assembled successfully.\n");
 
 
     freeMacroList(&macrosHead);

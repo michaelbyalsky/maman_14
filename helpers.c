@@ -186,16 +186,13 @@ char *getNewFileName(const char *filename, const char *suffix) {
     return outputFileName;
 }
 
-/**
- * @brief Creates the output file name by appending "_pre" to the original file name before the .as extension.
- * @param filename The name of the original file.
- * @return The name of the output file.
- */
-char *createOutputFilename(const char *filename) {
-    char *outputFilename = malloc(sizeof(char) * (strlen(filename) + 5));
-    char *extension;
-    strcpy(outputFilename, filename);
-    extension = strstr(outputFilename, ".as"); /* Find the .as extension */
-    strcpy(extension, "_pre.as"); /* Replace the .as extension with _pre.as */
-    return outputFilename;
+char *remove_new_line_char_from_string(char *string) {
+    while (*string != '\0') {
+        if (*string == 13) {
+            *string = '\0';
+            return string;
+        }
+        string++;
+    }
+    return string;
 }

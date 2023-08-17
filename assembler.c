@@ -11,13 +11,11 @@
 int is_error = 0;
 unsigned int line_address = INITIAL_ADDRESS;
 
-static void process_file(char *filename);
+void process_file(char *filename);
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int i;
-    for (i = 1; i < argc; ++i)
-    {
+    for (i = 1; i < argc; ++i) {
         process_file(argv[i]);
     }
     return 0;
@@ -27,8 +25,7 @@ int main(int argc, char *argv[])
  * @brief processes single file
  * @param filename
  */
-static void process_file(char *filename)
-{
+void process_file(char *filename) {
     unsigned int ic = IC_START;
     unsigned int dc = DC_START;
     /* initialize the data image table */
@@ -40,16 +37,16 @@ static void process_file(char *filename)
 
     /* pre-assemble the file */
     char *outputFileName = pre_assemble(filename);
+
+    line_address = INITIAL_ADDRESS;
     is_error = 0;
-    if (outputFileName == NULL)
-    {
+    if (outputFileName == NULL) {
         return;
     }
     /* first run */
     first_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
-    if (is_error)
-    {
+    if (is_error) {
         printf("Error in first pass, file %s\n", filename);
         exit(EXIT_FAILURE);
     }
@@ -59,6 +56,8 @@ static void process_file(char *filename)
 
     /* second run */
     second_run(outputFileName, &ic, &labelHead, &codeHead);
+
+    free(outputFileName);
 
     write_to_file(filename, &codeHead, &dataImgHead, &labelHead, ic, dc);
 

@@ -96,6 +96,7 @@ void first_run(char *filename, unsigned int *ic, unsigned int *dc, DataWord **da
         process_line(line, ic, dc, dataImgHead, labelHead, codeHead);
         line_number++;
     }
+    fclose(file);
 }
 
 void process_line(char *line, unsigned int *ic, unsigned int *dc, DataWord **dataImgHead, Label **labelHead, CodeWord **codeHead) {
@@ -474,6 +475,8 @@ void handle_extern_directive(const char *line, unsigned long *line_index, unsign
         is_error = 1;
         return;
     }
+    remove_new_line_char_from_string(extern_label);
+
     insert_label_node(labelHead, extern_label, 0, EXTERN_LABEL);
 }
 

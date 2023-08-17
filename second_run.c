@@ -13,12 +13,12 @@ void process_line_second_run(char *line, unsigned int *ic, Label **labelHead, Co
  */
 void skip_label(char *line, unsigned long *line_index);
 
-int second_run(char *filename, unsigned int *ic, Label **labelHead, CodeWord **codeHead) {
+void second_run(char *filename, unsigned int *ic, Label **labelHead, CodeWord **codeHead) {
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error: could not open file %s\n", filename);
-        return -1;
+        return;
     }
 
     line_number_2 = 1;
@@ -26,7 +26,7 @@ int second_run(char *filename, unsigned int *ic, Label **labelHead, CodeWord **c
         process_line_second_run(line, ic, labelHead, codeHead);
         line_number_2++;
     }
-    return 1;
+    fclose(file);
 }
 
 /**
@@ -110,6 +110,7 @@ void process_line_second_run(char *line, unsigned int *ic, Label **labelHead,
                     /* if entry are 10 */
                     /* add the label address to the code word */
                 } else if (label->type == ENTRY_LABEL || label->type == CODE_LABEL || label->type == DATA_LABEL) {
+                    free(codeWord->CodeWordUnion.data.label);
                     codeWord->CodeWordUnion.data.labelAddress = label->address;
                     codeWord->codeWordType = DATA_ADDRESS_WORD;
                 }

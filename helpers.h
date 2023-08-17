@@ -4,7 +4,7 @@
 #include "globals.h"
 
 #define SKIP_WHITE_SPACES(string, index) \
-    while (string[(index)] && (string[(index)] == '\t' || string[(index)] == ' ')) { \
+    while ((string)[(index)] && ((string)[(index)] == '\t' || (string)[(index)] == ' ')) { \
         ++(index); \
     }
 
@@ -95,5 +95,7 @@ int is12BitsSigned(int num);
  * @return
  */
 char *getNewFileName(const char *filename, const char *suffix);
+
+char *remove_new_line_char_from_string(char *string);
 
 #endif

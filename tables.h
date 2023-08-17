@@ -144,4 +144,5 @@ void insert_string_data_word(DataWord **head, char *string, int unsigned address
  * @param head
  */
 void free_data_word_list(DataWord **head);
+
 #endif

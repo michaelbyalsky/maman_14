@@ -1,7 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/stat.h>
 
 #include "tables.h"
 
@@ -52,16 +51,6 @@ void insert_string_data_word(DataWord **head, char *string, int unsigned address
     }
 }
 
-void free_data_word_list(DataWord **head) {
-    DataWord *current = *head;
-    while (current != NULL) {
-        DataWord *temp = current;
-        current = current->next;
-        free(temp);
-    }
-    *head = NULL;
-}
-
 
 Label *create_label_node(const char *name, unsigned int address, enum LabelType type) {
     Label *newNode = (Label *) malloc(sizeof(Label));
@@ -100,15 +89,6 @@ void print_label_list(Label **head) {
     }
 }
 
-void free_label_list(Label **head) {
-    Label *current = *head;
-    while (current != NULL) {
-        Label *temp = current;
-        current = current->next;
-        free(temp->name);
-        free(temp);
-    }
-}
 
 Label *find_label_by_name(Label **head, const char *name) {
     Label *current = *head;
@@ -148,7 +128,7 @@ int label_exists(Label **head, const char *name) {
 CodeWord *create_code_word_node(enum codeWordType codeWordType, int unsigned address) {
     CodeWord *newNode = (CodeWord *) malloc(sizeof(CodeWord));
     if (newNode == NULL) {
-        perror("Memory allocation failed.");
+        printf("Memory allocation failed.");
     }
     newNode->codeWordType = codeWordType;
     newNode->next = NULL;
@@ -157,8 +137,10 @@ CodeWord *create_code_word_node(enum codeWordType codeWordType, int unsigned add
     return newNode;
 }
 
-void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords,
-                               unsigned int ic, int unsigned address) {
+void
+insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest,
+                             int totalWords,
+                             unsigned int ic, int unsigned address) {
     CodeWord *newNode = create_code_word_node(INSTRUCTION_WORD, address);
     if (newNode != NULL) {
         newNode->are = ZERO;
@@ -181,7 +163,7 @@ void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, un
 }
 
 void insert_register_code_word(CodeWord **head, enum Register source_register,
-                            enum Register dest_register, int unsigned address) {
+                               enum Register dest_register, int unsigned address) {
     CodeWord *newNode = create_code_word_node(REGISTER_WORD, address);
     if (newNode != NULL) {
         newNode->are = ZERO;
@@ -240,21 +222,47 @@ void insert_data_label_code_word(CodeWord **head, char *label, enum Are are, int
     }
 }
 
-CodeWord* find_code_word_by_ic(CodeWord **head, unsigned int ic) {
+CodeWord *find_code_word_by_ic(CodeWord **head, unsigned int ic) {
     CodeWord *current = *head;
     while (current != NULL) {
-        if (current->CodeWordUnion.instruction.ic == ic) {
-            return current;
+        if (current->codeWordType == INSTRUCTION_WORD) {
+            if (current->CodeWordUnion.instruction.ic == ic && current->codeWordType == INSTRUCTION_WORD) {
+                return current;
+            }
         }
         current = current->next;
     }
     return NULL;
 }
 
+
 void free_code_word_list(CodeWord **head) {
     CodeWord *current = *head;
     while (current != NULL) {
         CodeWord *temp = current;
+        current = current->next;
+        if (temp->codeWordType == DATA_LABEL_WORD) {
+            free(temp->CodeWordUnion.data.label);
+        }
+        free(temp);
+    }
+    *head = NULL;
+}
+
+void free_label_list(Label **head) {
+    Label *current = *head;
+    while (current != NULL) {
+        Label *temp = current;
+        current = current->next;
+        free(temp->name);
+        free(temp);
+    }
+}
+
+void free_data_word_list(DataWord **head) {
+    DataWord *current = *head;
+    while (current != NULL) {
+        DataWord *temp = current;
         current = current->next;
         free(temp);
     }
