@@ -153,7 +153,7 @@ typedef struct CodeWord {
             unsigned int opcode;
             enum AddressMethod dest;
             int totalWords;
-            int ic;
+            unsigned int ic;
         } instruction;
 
 

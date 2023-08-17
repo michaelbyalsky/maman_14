@@ -4,7 +4,7 @@
 
 int line_number_2;
 
-void process_line_second_run(char *line, long *ic, Label **labelHead, CodeWord **codeHead);
+void process_line_second_run(char *line, unsigned int *ic, Label **labelHead, CodeWord **codeHead);
 
 /**
  * @brief the function skips the label in the line
@@ -13,12 +13,12 @@ void process_line_second_run(char *line, long *ic, Label **labelHead, CodeWord *
  */
 void skip_label(char *line, unsigned long *line_index);
 
-int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead) {
+void second_run(char *filename, unsigned int *ic, Label **labelHead, CodeWord **codeHead) {
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error: could not open file %s\n", filename);
-        return -1;
+        return;
     }
 
     line_number_2 = 1;
@@ -26,7 +26,7 @@ int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead)
         process_line_second_run(line, ic, labelHead, codeHead);
         line_number_2++;
     }
-    return 1;
+    fclose(file);
 }
 
 /**
@@ -36,7 +36,7 @@ int second_run(char *filename, long *ic, Label **labelHead, CodeWord **codeHead)
  * @param labelHead
  * @param codeHead
  */
-void process_line_second_run(char *line, long *ic, Label **labelHead,
+void process_line_second_run(char *line, unsigned int *ic, Label **labelHead,
                              CodeWord **codeHead) {
     unsigned long int i = 0;
     SKIP_WHITE_SPACES(line, i);
@@ -71,6 +71,7 @@ void process_line_second_run(char *line, long *ic, Label **labelHead,
             if (!update_label_type(labelHead, label, (enum LabelType) ENTRY)) {
                 logger_error("update label operation failed", line_number_2);
                 is_error = 1;
+                return;
             };
             return;
         }
@@ -84,6 +85,7 @@ void process_line_second_run(char *line, long *ic, Label **labelHead,
         if (codeWord == NULL) {
             logger_error("Code word not found", line_number_2);
             is_error = 1;
+            return;
         }
         l = codeWord->CodeWordUnion.instruction.totalWords;
         /* loop over the extra words, find the label and update the address */
@@ -108,6 +110,7 @@ void process_line_second_run(char *line, long *ic, Label **labelHead,
                     /* if entry are 10 */
                     /* add the label address to the code word */
                 } else if (label->type == ENTRY_LABEL || label->type == CODE_LABEL || label->type == DATA_LABEL) {
+                    free(codeWord->CodeWordUnion.data.label);
                     codeWord->CodeWordUnion.data.labelAddress = label->address;
                     codeWord->codeWordType = DATA_ADDRESS_WORD;
                 }

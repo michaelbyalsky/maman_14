@@ -12,6 +12,6 @@
  * @param labelHead - label list
  * @param codeHead - code list
  */
-void first_run(char *filename, long *ic, long *dc, DataWord **dataImgHead, Label **head, CodeWord **codeHead);
+void first_run(char *filename, unsigned int *ic, unsigned int *dc, DataWord **dataImgHead, Label **head, CodeWord **codeHead);
 
 #endif

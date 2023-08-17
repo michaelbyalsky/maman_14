@@ -175,3 +175,24 @@ int is10BitsSigned(int num) {
 int is12BitsSigned(int num) {
     return num >= -2048 && num <= 2047;
 }
+
+char *getNewFileName(const char *filename, const char *suffix) {
+    char *outputFileName = malloc(strlen(filename) + strlen(suffix) + 1);
+    char *as = ".as";
+    char *extension;
+    strcpy(outputFileName, filename);
+    extension = strstr(outputFileName, as);
+    strcpy(extension, suffix);
+    return outputFileName;
+}
+
+char *remove_new_line_char_from_string(char *string) {
+    while (*string != '\0') {
+        if (*string == 13) {
+            *string = '\0';
+            return string;
+        }
+        string++;
+    }
+    return string;
+}

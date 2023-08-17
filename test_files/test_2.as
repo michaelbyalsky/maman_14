@@ -7,7 +7,7 @@ endmcro
 prn -5
 bne LOOP
 mcro m2
-sub @r5, @r8
+sub @r5, @r7
     bne END
 endmcro
 m1
@@ -16,6 +16,6 @@ bne LOOP
 m2
 END: stop
 m2
-STR: .string “abcdef”
+STR: .string "abcdef"
 LENGTH: .data 6,-9,15
 K: .data 22

@@ -40,7 +40,7 @@ jobs:
 
       - name: Run assembler
         run: |
-          ./assembler ./test_files/initial.as > output.txt
+          ./assembler ./test_files/test_3.as > output.txt
             if [ $? -ne 0 ]; then
                 echo "Assembler failed"
                 exit 1

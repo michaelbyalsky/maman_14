@@ -14,7 +14,7 @@
  * @param ic - the ic of the instruction
  * @return
  */
-void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, int ic, int unsigned address);
+void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, unsigned int ic, int unsigned address);
 
 
 /**
@@ -44,13 +44,6 @@ void insert_register_code_word(CodeWord **head, enum Register source_register,
  * @return
  */
 void insert_data_number_code_word(CodeWord **head, signed int value, enum Are are, int unsigned address);
-
-/**
- * @brief Creates a new code word node
- * @param head - the head of the list
- * @return
- */
-void print_code_word_list(CodeWord **head);
 
 /**
  * @brief free the code word list
@@ -122,7 +115,7 @@ int update_label_type(Label **head, const char *name, enum LabelType type);
  * @param ic
  * @return
  */
-CodeWord* find_code_word_by_ic(CodeWord **head, int ic);
+CodeWord* find_code_word_by_ic(CodeWord **head, unsigned int ic);
 
 
 /**
@@ -147,14 +140,9 @@ void insert_number_data_word(DataWord **head, int number, int unsigned address);
 void insert_string_data_word(DataWord **head, char *string, int unsigned address);
 
 /**
- * @brief print the data word list
- * @param head
- */
-void print_data_word_list(DataWord **head);
-
-/**
  * @brief free the data word list
  * @param head
  */
 void free_data_word_list(DataWord **head);
+
 #endif
