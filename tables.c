@@ -135,7 +135,7 @@ insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigne
                              unsigned int ic, int unsigned address) {
     CodeWord *newNode = create_code_word_node(INSTRUCTION_WORD, address);
     if (newNode != NULL) {
-        newNode->are = ZERO;
+        newNode->are = ABSOLUTE;
         newNode->CodeWordUnion.instruction.dest = dest;
         newNode->CodeWordUnion.instruction.opcode = opcode;
         newNode->CodeWordUnion.instruction.source = source;
@@ -158,7 +158,7 @@ void insert_register_code_word(CodeWord **head, enum Register source_register,
                                enum Register dest_register, int unsigned address) {
     CodeWord *newNode = create_code_word_node(REGISTER_WORD, address);
     if (newNode != NULL) {
-        newNode->are = ZERO;
+        newNode->are = ABSOLUTE;
         newNode->CodeWordUnion.registerWord.source = source_register;
         newNode->CodeWordUnion.registerWord.dest = dest_register;
 

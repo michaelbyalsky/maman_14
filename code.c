@@ -244,14 +244,14 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
             insert_instruction_code_word(codeHead, 0, instruction.opcode, operand_1.addressingMethod, l, *ic,
                                          line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == IMMEDIATE) {
             l += 2;
             insert_instruction_code_word(codeHead, 0, instruction.opcode, operand_1.addressingMethod, l, *ic,
                                          line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
         }
     } else {
@@ -273,7 +273,7 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
             insert_register_code_word(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0,
                                       line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == REGISTER_DIRECT && operand_2.addressingMethod == IMMEDIATE) {
             l += 3;
@@ -284,7 +284,7 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
             insert_register_code_word(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0,
                                       line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == DIRECT && operand_2.addressingMethod == REGISTER_DIRECT) {
             l += 3;
@@ -295,7 +295,7 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
             insert_register_code_word(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber,
                                       line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == DIRECT && operand_2.addressingMethod == DIRECT) {
             l += 3;
@@ -303,9 +303,9 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
                                          operand_2.addressingMethod, l, *ic,
                                          line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == DIRECT && operand_2.addressingMethod == IMMEDIATE) {
             l += 3;
@@ -313,9 +313,9 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
                                          operand_2.addressingMethod, l, *ic,
                                          line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == IMMEDIATE && operand_2.addressingMethod == REGISTER_DIRECT) {
             l += 3;
@@ -326,7 +326,7 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
             insert_register_code_word(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber,
                                       line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == IMMEDIATE && operand_2.addressingMethod == DIRECT) {
             l += 3;
@@ -334,9 +334,9 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
                                          operand_2.addressingMethod, l, *ic,
                                          line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
-            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, RELOCATABLE, line_address);
             line_address++;
         } else if (operand_1.addressingMethod == IMMEDIATE && operand_2.addressingMethod == IMMEDIATE) {
             l += 3;
@@ -344,9 +344,9 @@ int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned
                                          operand_2.addressingMethod, l, *ic,
                                          line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
-            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ABSOLUTE, line_address);
             line_address++;
         }
     }

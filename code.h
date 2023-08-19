@@ -109,9 +109,9 @@ Instruction findInstructionByName(const char *name);
  * @brief Enum for addressing methods
  */
 enum Are {
-    ZERO = 0,
-    ZERO_ONE = 1,
-    ONE_ZERO = 2
+    ABSOLUTE = 0,
+    EXTERNAL = 1,
+    RELOCATABLE = 2
 };
 
 /* Enum for addressing methods */
