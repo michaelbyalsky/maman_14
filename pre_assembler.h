@@ -17,7 +17,7 @@ typedef struct Macro {
  * @param macrosHead
  * @return
  */
-int loadMacros(const char *filename, Macro **macrosHead);
+void loadMacros(const char *filename, Macro **macrosHead);
 
 /**
  * @brief replace macros in file and write the file

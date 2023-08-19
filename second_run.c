@@ -135,9 +135,9 @@ void handle_instruction_second_run(unsigned int *ic, Label **labelHead, CodeWord
             }
             /* if extern are 01 */
             if (label->type == EXTERN_LABEL) {
-                /* update the are to 01 */
+                /* update the "are" to 01 */
                 codeWord->are = EXTERNAL;
-                /* if entry are 10 */
+                /* if entry "are" is 10 */
                 /* add the label address to the code word */
             } else if (label->type == ENTRY_LABEL || label->type == CODE_LABEL || label->type == DATA_LABEL) {
                 free(codeWord->CodeWordUnion.data.label);

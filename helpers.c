@@ -6,7 +6,7 @@
 #include "helpers.h"
 
 int is_empty_line(char *s) {
-    while (*s != '\0') {
+    while (*s != '\0' && *s != '\n' && *s != '\r' && *s != 13 && *s != '\t') {
         if (!isspace(*s)) {
             return 0;
         }
@@ -65,7 +65,7 @@ FuncResult get_number_from_string(char *string, int *number) {
         /* check if the number found */
 
         if (!is_valid_number(temp_num)) {
-            strcpy((char *) func_result.message, "Error: invalid number\n");
+            strcpy((char *) func_result.message, "invalid number\n");
             func_result.result = 0;
             return func_result;
         }
@@ -91,14 +91,14 @@ FuncResult is_valid_label(const char *label) {
 
     /* Check the length of the label (must be at most 31 characters) */
     if (len == 0 || len > 31) {
-        strcpy((char *) func_result.message, "Error: invalid label- label must be at most 31 characters\n");
+        strcpy((char *) func_result.message, "invalid label- label must be at most 31 characters\n");
         func_result.result = 0;
         return func_result;
     }
 
     /* Check if the label starts with an alphabetic character */
     if (!isalpha(label[0])) {
-        strcpy((char *) func_result.message, "Error: invalid label- label must start with an alphabetic character\n");
+        strcpy((char *) func_result.message, "invalid label- label must start with an alphabetic character\n");
         func_result.result = 0;
         return func_result;
     }
@@ -107,7 +107,8 @@ FuncResult is_valid_label(const char *label) {
     for (i = 1; i < len; ++i) {
         /* Check if the character is an alphanumeric character */
         if (!isalnum(label[i])) {
-            strcpy((char *) func_result.message, "Error: invalid label- label must contain only alphanumeric characters\n");
+            strcpy((char *) func_result.message,
+                   "invalid label- label must contain only alphanumeric characters\n");
             func_result.result = 0;
             return func_result;
         }
@@ -149,7 +150,11 @@ void logger_warning(const char *message, int line_number) {
 }
 
 int is_line_80_chars_long(const char *line) {
-    return strlen(line) <= 80;
+    /* check if there is a line break character */
+    if (strchr(line, '\n') != NULL) {
+        return 1;
+    }
+    return 0;
 }
 
 int is10BitsSigned(int num) {
@@ -179,4 +184,12 @@ char *remove_new_line_char_from_string(char *string) {
         string++;
     }
     return string;
+}
+
+int validate_file_ends_with_as(const char *filename) {
+    if (strcmp(filename + strlen(filename) - 3, ".as") != 0) {
+        printf("Error: file %s does not end with .as\n", filename);
+        return 0;
+    }
+    return 1;
 }
