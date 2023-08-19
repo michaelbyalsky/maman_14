@@ -1,5 +1,9 @@
 # maman_14
 
+## Authors
+1. Michael Byalsky
+2. Ido Perez
+
 ## Description
 This project is a compiler for assembly language to binary code.
 
@@ -18,7 +22,7 @@ The is a CI for this project to check the build and run the tests, you can find 
 ## Potential Problems
 If the assembler is not working, try to run the following command:
 ```
-rm -f *.o
+rm *.o
 rm ./assembler
 make
 ```
