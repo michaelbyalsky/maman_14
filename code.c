@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "helpers.h"
+#include "tables.h"
 #include "code.h"
 
 /* directives mapping */
@@ -150,6 +151,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
     int i;
     int *addressingMethods;
     int numberOfAddressingMethods;
+    func_result.result = 1;
     if (isSourceOperand) {
         addressingMethods = instruction.allowedSourceAddressingMethods;
         numberOfAddressingMethods = instruction.allowedSourceAddressingMethodsCount;
@@ -175,7 +177,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
                 }
                 operand->NameLabelUnion.number = number_operand;
                 operand->operandType = NUMBER_OPERAND;
-                func_result.result = IMMEDIATE;
+                operand->addressingMethod = IMMEDIATE;
                 return func_result;
             }
         }
@@ -190,7 +192,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
                     return is_valid_label_result;
                 }
                 strcpy(operand->NameLabelUnion.label, label_operand);
-                func_result.result = DIRECT;
+                operand->addressingMethod = DIRECT;
                 return func_result;
             }
         }
@@ -200,7 +202,7 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
             if (register_operand.registerNumber != -1) {
                 operand->NameLabelUnion.register_operand = register_operand;
                 operand->operandType = REGISTER_OPERAND;
-                func_result.result = REGISTER_DIRECT;
+                operand->addressingMethod = REGISTER_DIRECT;
                 return func_result;
             } else {
                 func_result.result = NOT_EXISTS;
@@ -220,4 +222,133 @@ int is_directive(const char *line, const unsigned long *line_index) {
         return 1;
     }
     return 0;
+}
+
+int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned int *ic, int number_of_operands, Operand operand_1, Operand operand_2) {
+    int l = 0;
+    if (number_of_operands == 0) {
+        l += 1;
+        insert_instruction_code_word(codeHead, 0, instruction.opcode, 0, l, *ic, line_address);
+        line_address++;
+    } else if (number_of_operands == 1) {
+        if (operand_1.addressingMethod == REGISTER_DIRECT) {
+            l += 2;
+            insert_instruction_code_word(codeHead, 0, instruction.opcode, operand_1.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_register_code_word(codeHead, 0, operand_1.NameLabelUnion.register_operand.registerNumber,
+                                      line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == DIRECT) {
+            l += 2;
+            insert_instruction_code_word(codeHead, 0, instruction.opcode, operand_1.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == IMMEDIATE) {
+            l += 2;
+            insert_instruction_code_word(codeHead, 0, instruction.opcode, operand_1.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+        }
+    } else {
+        if (operand_1.addressingMethod == REGISTER_DIRECT && operand_2.addressingMethod == REGISTER_DIRECT) {
+            l += 2;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_register_code_word(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber,
+                                      operand_2.NameLabelUnion.register_operand.registerNumber, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == REGISTER_DIRECT && operand_2.addressingMethod == DIRECT) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_register_code_word(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0,
+                                      line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == REGISTER_DIRECT && operand_2.addressingMethod == IMMEDIATE) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_register_code_word(codeHead, operand_1.NameLabelUnion.register_operand.registerNumber, 0,
+                                      line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == DIRECT && operand_2.addressingMethod == REGISTER_DIRECT) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_register_code_word(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber,
+                                      line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == DIRECT && operand_2.addressingMethod == DIRECT) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == DIRECT && operand_2.addressingMethod == IMMEDIATE) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_1.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == IMMEDIATE && operand_2.addressingMethod == REGISTER_DIRECT) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_register_code_word(codeHead, 0, operand_2.NameLabelUnion.register_operand.registerNumber,
+                                      line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == IMMEDIATE && operand_2.addressingMethod == DIRECT) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+            insert_data_label_code_word(codeHead, operand_2.NameLabelUnion.label, ONE_ZERO, line_address);
+            line_address++;
+        } else if (operand_1.addressingMethod == IMMEDIATE && operand_2.addressingMethod == IMMEDIATE) {
+            l += 3;
+            insert_instruction_code_word(codeHead, operand_1.addressingMethod, instruction.opcode,
+                                         operand_2.addressingMethod, l, *ic,
+                                         line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_1.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+            insert_data_number_code_word(codeHead, operand_2.NameLabelUnion.number, ZERO, line_address);
+            line_address++;
+        }
+    }
+    return l;
 }

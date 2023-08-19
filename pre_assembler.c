@@ -50,7 +50,7 @@ int loadMacros(const char *filename, Macro **macrosHead) {
  * @param macros The array of Macro structs containing the macros to replace.
  * @param macroCount The number of macros in the macros array.
  */
-void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, const char *outputFilename) {
+void replaceMacros(const char *filename, Macro **macrosHead, const char *outputFilename) {
     char line[MAX_LINE_LENGTH];
     int insideMacro = 0;  /* Flag to track if we are inside a macro paragraph */
     FILE *inputFile = fopen(filename, "r");
@@ -130,7 +130,7 @@ char *pre_assemble(const char *filename) {
     if (macroCount == 0) {
         printf("No macros found.\n");
     }
-    replaceMacros(filename, &macrosHead, macroCount, outputFilename);
+    replaceMacros(filename, &macrosHead, outputFilename);
 
 
     freeMacroList(&macrosHead);

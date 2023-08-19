@@ -81,14 +81,6 @@ void insert_label_node(Label **head, const char *name, unsigned int address, enu
     }
 }
 
-void print_label_list(Label **head) {
-    Label *current = *head;
-    while (current != NULL) {
-        printf("Name: %s, Address: %u, Type: %d\n", current->name, current->address, current->type);
-        current = current->next;
-    }
-}
-
 
 Label *find_label_by_name(Label **head, const char *name) {
     Label *current = *head;

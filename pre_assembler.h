@@ -26,7 +26,7 @@ int loadMacros(const char *filename, Macro **macrosHead);
  * @param macroCount
  * @param outputFilename
  */
-void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, const char *outputFilename);
+void replaceMacros(const char *filename, Macro **macrosHead, const char *outputFilename);
 
 /**
  * @brief pre assemble the file
@@ -34,13 +34,6 @@ void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, con
  * @return
  */
 char *pre_assemble(const char *filename);
-
-/**
- * @brief generate output filename
- * @param filename
- * @return char - the output file name
- */
-char *createOutputFilename(const char *filename);
 
 /**
  * @brief create macro instance

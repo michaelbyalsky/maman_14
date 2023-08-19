@@ -28,17 +28,6 @@ void remove_white_spaces(char *str, int start_index) {
     str[j] = '\0';
 }
 
-void move_string_pointer_until_no_white_space(char **string) {
-    while (**string && (**string == '\t' || **string == ' ')) {
-        ++(*string);
-    }
-}
-
-/**
- * @brief checks if the string is a valid number
- * @param line
- * @return int
- */
 int is_valid_number(const char *str) {
     if (*str == '-' || *str == '+') {
         ++str;
@@ -54,11 +43,6 @@ int is_valid_number(const char *str) {
 }
 
 
-/**
- * @brief gets a string that it's first character is a number and returns the number
- * @param string
- * @return FuncResult
- */
 FuncResult get_number_from_string(char *string, int *number) {
     FuncResult func_result;
     int i = 0;
@@ -86,7 +70,7 @@ FuncResult get_number_from_string(char *string, int *number) {
             return func_result;
         }
 
-        *number = atoi(temp_num);
+        *number = strtol(temp_num, NULL, 10);
         func_result.result = 1;
         return func_result;
     }

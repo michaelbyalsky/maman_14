@@ -14,7 +14,9 @@
  * @param ic - the ic of the instruction
  * @return
  */
-void insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest, int totalWords, unsigned int ic, int unsigned address);
+void
+insert_instruction_code_word(CodeWord **head, enum AddressMethod source, unsigned int opcode, enum AddressMethod dest,
+                             int totalWords, unsigned int ic, int unsigned address);
 
 
 /**
@@ -34,7 +36,7 @@ void insert_data_label_code_word(CodeWord **head, char *label, enum Are are, int
  * @return
  */
 void insert_register_code_word(CodeWord **head, enum Register source_register,
-                            enum Register , int unsigned address);
+                               enum Register, int unsigned address);
 
 /**
  * @brief Inserts a data number code word to the end of the list
@@ -77,13 +79,6 @@ void insert_label_node(Label **head, const char *name, unsigned int address, enu
 void free_label_list(Label **head);
 
 /**
- * @brief print the label list
- * @param head - the head of the list
- * @return
- */
-void print_label_list(Label **head);
-
-/**
  * @brief find label by name
  * @param head - the head of the list
  * @param name - the name of the label
@@ -115,7 +110,7 @@ int update_label_type(Label **head, const char *name, enum LabelType type);
  * @param ic
  * @return
  */
-CodeWord* find_code_word_by_ic(CodeWord **head, unsigned int ic);
+CodeWord *find_code_word_by_ic(CodeWord **head, unsigned int ic);
 
 
 /**
