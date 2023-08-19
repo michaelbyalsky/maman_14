@@ -66,7 +66,7 @@ void print_code_word_list(FILE *outputFile, CodeWord **head, unsigned int ic, un
                          (current->are & 0x3);
             print_base64(outputFile, binaryCode);
         } else if (current->codeWordType == DATA_LABEL_WORD || current->codeWordType == DATA_ADDRESS_WORD) {
-            if (current->are == ZERO_ONE) {
+            if (current->are == EXTERNAL) {
                 if (!is_externals_exists) {
                     externals = fopen(externalsFileName, "w");
                     is_externals_exists = 1;

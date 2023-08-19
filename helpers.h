@@ -98,4 +98,11 @@ char *getNewFileName(const char *filename, const char *suffix);
 
 char *remove_new_line_char_from_string(char *string);
 
+/**
+ * @brief the function checks if the file ends with .as
+ * @param filename
+ * @return
+ */
+int validate_file_ends_with_as(const char *filename);
+
 #endif

@@ -12,13 +12,13 @@
  * @param macros The array of Macro structs to load macros into.
  * @return The number of macros loaded.
  */
-int loadMacros(const char *filename, Macro **macrosHead) {
+void loadMacros(const char *filename, Macro **macrosHead) {
     int macroCount = 0;
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error: could not open file %s\n", filename);
-        return -1;
+        return;
     }
 
 
@@ -41,7 +41,6 @@ int loadMacros(const char *filename, Macro **macrosHead) {
     }
 
     fclose(file);
-    return macroCount;
 }
 
 /**
@@ -50,7 +49,7 @@ int loadMacros(const char *filename, Macro **macrosHead) {
  * @param macros The array of Macro structs containing the macros to replace.
  * @param macroCount The number of macros in the macros array.
  */
-void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, const char *outputFilename) {
+void replaceMacros(const char *filename, Macro **macrosHead, const char *outputFilename) {
     char line[MAX_LINE_LENGTH];
     int insideMacro = 0;  /* Flag to track if we are inside a macro paragraph */
     FILE *inputFile = fopen(filename, "r");
@@ -124,13 +123,10 @@ void replaceMacros(const char *filename, Macro **macrosHead, int macroCount, con
  */
 char *pre_assemble(const char *filename) {
     Macro *macrosHead = NULL;
-    int macroCount = loadMacros(filename, &macrosHead);
-    char *outputFilename = getNewFileName(filename, "_pre.as");
+    char *outputFilename = getNewFileName(filename, "_after_pre.as");
+    loadMacros(filename, &macrosHead);
 
-    if (macroCount == 0) {
-        printf("No macros found.\n");
-    }
-    replaceMacros(filename, &macrosHead, macroCount, outputFilename);
+    replaceMacros(filename, &macrosHead, outputFilename);
 
 
     freeMacroList(&macrosHead);

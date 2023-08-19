@@ -109,9 +109,9 @@ Instruction findInstructionByName(const char *name);
  * @brief Enum for addressing methods
  */
 enum Are {
-    ZERO = 0,
-    ZERO_ONE = 1,
-    ONE_ZERO = 2
+    ABSOLUTE = 0,
+    EXTERNAL = 1,
+    RELOCATABLE = 2
 };
 
 /* Enum for addressing methods */
@@ -203,6 +203,7 @@ typedef struct {
         Register register_operand;
     } NameLabelUnion;
     enum OperandType operandType;
+    enum AddressMethod addressingMethod;
 } Operand;
 
 /**
@@ -224,4 +225,18 @@ FuncResult get_operand_from_string(char *string, Instruction instruction, Operan
  * @return int
  */
 int is_directive(const char *line, const unsigned long *line_index);
+
+
+/**
+ * @brief function to insert a code word to the end of the list depends on the instruction
+ * @param codeHead
+ * @param instruction
+ * @param ic
+ * @param number_of_operands
+ * @param operand_1
+ * @param operand_2
+ * @return
+ */
+int write_code_word(CodeWord **codeHead, Instruction instruction, const unsigned int *ic, int number_of_operands, Operand operand_1, Operand operand_2);
+
 #endif

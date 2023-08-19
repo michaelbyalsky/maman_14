@@ -34,9 +34,14 @@ void process_file(char *filename) {
     Label *labelHead = NULL;
     /* initialize the code table */
     CodeWord *codeHead = NULL;
+    char *outputFileName;
+    /* validate file ends with .as */
+    if (!validate_file_ends_with_as(filename)) {
+        return;
+    }
 
     /* pre-assemble the file */
-    char *outputFileName = pre_assemble(filename);
+    outputFileName = pre_assemble(filename);
 
     line_address = INITIAL_ADDRESS;
     is_error = 0;
@@ -47,8 +52,8 @@ void process_file(char *filename) {
     first_run(outputFileName, &ic, &dc, &dataImgHead, &labelHead, &codeHead);
 
     if (is_error) {
-        printf("Error in first pass, file %s\n", filename);
-        exit(EXIT_FAILURE);
+        printf("Error in first pass, file %s\n", outputFileName);
+        return;
     }
 
     ic = IC_START;
@@ -56,6 +61,10 @@ void process_file(char *filename) {
 
     /* second run */
     second_run(outputFileName, &ic, &labelHead, &codeHead);
+    if (is_error) {
+        printf("Error in second pass, file %s\n", outputFileName);
+        return;
+    }
 
     free(outputFileName);
 
