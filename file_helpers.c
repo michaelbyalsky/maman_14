@@ -16,13 +16,41 @@ FILE *entries;
 FILE *externals;
 FILE *objectFile;
 
+/**
+ * @brief print code word list to file
+ * @param outputFile  - output file
+ * @param head - code word list
+ * @param ic - instruction counter
+ * @param dc - data counter
+ */
 void print_code_word_list(FILE *outputFile, CodeWord **head, unsigned int ic, unsigned int dc);
 
+/**
+ * @brief print data word list to file
+ * @param outputFile - output file
+ * @param head - data word list
+ */
 void print_data_word_list(FILE *outputFile, DataWord **head);
 
+/**
+ * @brief print external to file
+ * @param name - external name
+ * @param address - external address
+ */
 void print_external(char *name, unsigned int address);
 
+/**
+ * @brief print entries to file
+ * @param labelHead - label list
+ */
 void print_entries(Label **labelHead);
+
+/**
+ * @brief print single value in base64 to file
+ * @param outputFile - output file
+ * @param value - value to print
+ */
+void print_base64(FILE *outputFile, unsigned int value);
 
 void write_to_file(const char *filename, CodeWord **codeHead, DataWord **dataHead, Label **labelHead, unsigned int ic,
                    unsigned int dc) {
@@ -31,10 +59,13 @@ void write_to_file(const char *filename, CodeWord **codeHead, DataWord **dataHea
     objectFileName = getNewFileName(filename, objectSuffix);
 
     objectFile = fopen(objectFileName, "w");
+    /* print the code word list, to avoid another iteration we will print also the externals if exists */
     print_code_word_list(objectFile, codeHead, ic, dc);
+    /* print the data word list */
     print_data_word_list(objectFile, dataHead);
     fclose(objectFile);
 
+    /* print the entries */
     print_entries(labelHead);
 
     free(objectFileName);
@@ -54,6 +85,7 @@ void print_code_word_list(FILE *outputFile, CodeWord **head, unsigned int ic, un
     while (current != NULL) {
         unsigned int binaryCode;
         if (current->codeWordType == INSTRUCTION_WORD) {
+            /* convert the instruction to binary according to the instruction format */
             binaryCode =
                     ((current->CodeWordUnion.instruction.source & 0x7) << 9) |
                     ((current->CodeWordUnion.instruction.opcode & 0xF) << 5) |
@@ -61,6 +93,7 @@ void print_code_word_list(FILE *outputFile, CodeWord **head, unsigned int ic, un
                     (current->are & 0x3);
             print_base64(outputFile, binaryCode);
         } else if (current->codeWordType == REGISTER_WORD) {
+            /* convert the register extra word to binary according to the instruction format */
             binaryCode = ((current->CodeWordUnion.registerWord.source & 0x1F) << 7) |
                          ((current->CodeWordUnion.registerWord.dest & 0x1F) << 2) |
                          (current->are & 0x3);
@@ -68,11 +101,13 @@ void print_code_word_list(FILE *outputFile, CodeWord **head, unsigned int ic, un
         } else if (current->codeWordType == DATA_LABEL_WORD || current->codeWordType == DATA_ADDRESS_WORD) {
             if (current->are == EXTERNAL) {
                 if (!is_externals_exists) {
+                    /* if this is the first external, open the file */
                     externals = fopen(externalsFileName, "w");
                     is_externals_exists = 1;
                 }
 
                 binaryCode = (current->are & 0x3);
+                /* print the external to the externals file */
                 print_external(current->CodeWordUnion.data.label, current->address);
             } else {
                 binaryCode = ((current->CodeWordUnion.data.labelAddress & 0xFFF) << 2) | (current->are & 0x3);
@@ -80,6 +115,7 @@ void print_code_word_list(FILE *outputFile, CodeWord **head, unsigned int ic, un
             print_base64(outputFile, binaryCode);
         } else if (current->codeWordType == DATA_NUMBER_WORD) {
             if (current->CodeWordUnion.data.value < 0) {
+                /* convert the data number to binary according to the instruction format */
                 binaryCode = (unsigned int) (((~abs(current->CodeWordUnion.data.value) + 1) & 0xFFF) << 2) |
                              (current->are & 0x3);
             } else {
@@ -100,9 +136,11 @@ void print_data_word_list(FILE *outputFile, DataWord **head) {
     while (current != NULL) {
         unsigned int binaryCode;
         if (current->datatype == DATA) {
+            /* if the data is negative, convert it to binary according to the instruction format */
             if (current->NumberStringUnion.number < 0) {
                 binaryCode = (unsigned int) (((~abs(current->NumberStringUnion.number) + 1) & 0xFFF));
             } else {
+                /* convert the data number to binary according to the instruction format */
                 binaryCode = current->NumberStringUnion.number & 0xFFF;
             }
         } else {
@@ -126,6 +164,7 @@ void print_entries(Label **labelHead) {
     Label *current = *labelHead;
     while (current != NULL) {
         if (current->type == ENTRY_LABEL) {
+            /* if this is the first entry, open the file */
             if (!is_entries_exists) {
                 entries = fopen(entriesFileName, "w");
                 is_entries_exists = 1;
